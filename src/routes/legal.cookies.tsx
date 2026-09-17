@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { company } from "@/content/company";
 import { LegalBlock, LegalPage } from "@/components/site/legal";
+import { useSiteChrome } from "./__root";
 
 export const Route = createFileRoute("/legal/cookies")({
   head: () => ({
@@ -22,6 +22,9 @@ export const Route = createFileRoute("/legal/cookies")({
 });
 
 function Cookies() {
+  const { settings } = useSiteChrome();
+  const email = settings?.email ?? "";
+
   return (
     <LegalPage
       eyebrow="Legal"
@@ -61,7 +64,8 @@ function Cookies() {
       <LegalBlock heading="Changing your choice">
         <p>
           You can clear this site's data in your browser settings at any time; the cookie banner
-          will then appear again. Questions: {company.email}.
+          will then appear again.
+          {email ? ` Questions: ${email}.` : ""}
         </p>
       </LegalBlock>
     </LegalPage>

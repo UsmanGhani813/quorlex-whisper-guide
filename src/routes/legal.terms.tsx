@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { company } from "@/content/company";
 import { LegalBlock, LegalPage } from "@/components/site/legal";
+import { useSiteChrome } from "./__root";
 
 export const Route = createFileRoute("/legal/terms")({
   head: () => ({
@@ -13,7 +13,10 @@ export const Route = createFileRoute("/legal/terms")({
           "The terms covering use of this website, how enquiries and proposals work, intellectual property, and limits of liability.",
       },
       { property: "og:title", content: "Terms of service — Quorlex Soft" },
-      { property: "og:description", content: "Terms covering use of this website and our engagements." },
+      {
+        property: "og:description",
+        content: "Terms covering use of this website and our engagements.",
+      },
       { property: "og:url", content: "/legal/terms" },
     ],
     links: [{ rel: "canonical", href: "/legal/terms" }],
@@ -22,11 +25,14 @@ export const Route = createFileRoute("/legal/terms")({
 });
 
 function Terms() {
+  const { settings } = useSiteChrome();
+  const name = settings?.company_name ?? "Quorlex Soft";
+
   return (
     <LegalPage
       eyebrow="Legal"
       title="Terms of service"
-      intro={`Terms covering use of this website and enquiries made to ${company.name}.`}
+      intro={`Terms covering use of this website and enquiries made to ${name}.`}
     >
       <LegalBlock heading="Use of this website">
         <p>
@@ -53,10 +59,10 @@ function Terms() {
 
       <LegalBlock heading="Intellectual property">
         <p>
-          Site content, branding and design are owned by {company.name} unless stated otherwise.
-          Ownership of deliverables produced in client engagements is governed by the relevant
-          contract; our standard position is that source code, data and infrastructure accounts
-          transfer to the client on completion of agreed commercial terms.
+          Site content, branding and design are owned by {name} unless stated otherwise. Ownership
+          of deliverables produced in client engagements is governed by the relevant contract; our
+          standard position is that source code, data and infrastructure accounts transfer to the
+          client on completion of agreed commercial terms.
         </p>
       </LegalBlock>
 

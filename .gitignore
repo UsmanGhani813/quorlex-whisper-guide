@@ -14,7 +14,13 @@ dist-ssr
 .vinxi
 .tanstack/**
 .nitro
+.vercel
 *.local
+
+# Env files — NEVER commit these
+.env
+.env.*
+!.env.example
 
 # Wrangler / Cloudflare
 .wrangler/

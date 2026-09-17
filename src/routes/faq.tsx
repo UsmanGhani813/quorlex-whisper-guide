@@ -1,69 +1,58 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { faqs } from "@/content/faq";
+import { fetchFaqs } from "@/lib/cms";
 import { CtaBand, PageHeader, Section } from "@/components/site/sections";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 export const Route = createFileRoute("/faq")({
   head: () => ({
     meta: [
-      { title: "FAQ — working model, budgets, ownership | Quorlex Soft" },
+      { title: "FAQ — Quorlex Soft" },
       {
         name: "description",
         content:
-          "How engagements start, fixed scope versus ongoing work, who owns the code, how changes are handled, support after launch and what we need to estimate.",
+          "Common questions about how Quorlex Soft engages, scopes, delivers and supports projects.",
       },
-      { property: "og:title", content: "Frequently asked questions — Quorlex Soft" },
+      { property: "og:title", content: "FAQ — Quorlex Soft" },
       {
         property: "og:description",
-        content: "Straight answers on scope, budgets, ownership, communication and support.",
+        content: "How we work, what to expect, and how projects run.",
       },
       { property: "og:url", content: "/faq" },
     ],
     links: [{ rel: "canonical", href: "/faq" }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          mainEntity: faqs.map((item) => ({
-            "@type": "Question",
-            name: item.q,
-            acceptedAnswer: { "@type": "Answer", text: item.a },
-          })),
-        }),
-      },
-    ],
   }),
+  loader: async () => {
+    const faqs = await fetchFaqs();
+    return { faqs };
+  },
   component: Faq,
 });
 
 function Faq() {
+  const { faqs } = Route.useLoaderData();
+
   return (
     <>
       <PageHeader
         eyebrow="FAQ"
-        title="Questions we are asked before a project starts"
-        intro="If your question is not here, ask it directly — we will answer plainly."
+        title="Frequently asked questions"
+        intro="How we work, what to expect, and how projects run."
       />
 
       <Section bordered={false}>
-        <Accordion type="single" collapsible className="mx-auto max-w-3xl">
+        <div className="divide-y divide-border rounded-xl border border-border bg-card">
           {faqs.map((item) => (
-            <AccordionItem key={item.q} value={item.q}>
-              <AccordionTrigger className="text-left text-base">{item.q}</AccordionTrigger>
-              <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
-                {item.a}
-              </AccordionContent>
-            </AccordionItem>
+            <details key={item.id} className="group p-6">
+              <summary className="flex cursor-pointer items-start justify-between gap-4 text-base font-semibold text-foreground">
+                {item.question}
+                <span className="mt-1 text-primary transition-transform group-open:rotate-45">
+                  +
+                </span>
+              </summary>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.answer}</p>
+            </details>
           ))}
-        </Accordion>
+        </div>
       </Section>
 
       <CtaBand />

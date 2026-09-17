@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useMatch,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -15,8 +16,7 @@ import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { CookieConsent } from "@/components/site/cookie-consent";
 import { Toaster } from "@/components/ui/sonner";
-import { company } from "@/content/company";
-
+import { fetchSiteChrome, type SiteChrome } from "@/lib/cms";
 
 function NotFoundComponent() {
   return (
@@ -79,6 +79,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  loader: async (): Promise<{ chrome: SiteChrome }> => {
+    const chrome = await fetchSiteChrome();
+    return { chrome };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -111,29 +115,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: company.name,
-  description: company.positioning,
-  email: company.email,
-  telephone: company.phone,
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "London",
-    addressCountry: "GB",
-  },
-};
+/**
+ * Hook to access site chrome data (site_settings, nav_items, footer, socials)
+ * from any child route.
+ */
+export function useSiteChrome(): SiteChrome {
+  const match = useMatch({ from: "__root__", shouldThrow: true });
+  return (match.loaderData as { chrome: SiteChrome }).chrome;
+}
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
       <head>
         <HeadContent />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
-        />
       </head>
       <body>
         {children}
@@ -145,20 +140,44 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { chrome } = Route.useLoaderData();
+
+  const settings = chrome.settings;
+  const organizationSchema = settings
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: settings.company_name,
+        description: settings.positioning ?? undefined,
+        email: settings.email ?? undefined,
+        telephone: settings.phone ?? undefined,
+        address: settings.registered_in
+          ? {
+              "@type": "PostalAddress",
+              addressLocality: settings.registered_in,
+            }
+          : undefined,
+      }
+    : null;
 
   return (
     <QueryClientProvider client={queryClient}>
+      {organizationSchema ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+      ) : null}
       <div className="flex min-h-screen flex-col">
-        <Header />
+        <Header chrome={chrome} />
         <main className="flex-1">
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
         </main>
-        <Footer />
+        <Footer chrome={chrome} />
       </div>
       <CookieConsent />
       <Toaster />
     </QueryClientProvider>
   );
 }
-

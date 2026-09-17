@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { company, story, values, idealClient } from "@/content/company";
+import { fetchAboutBundle } from "@/lib/cms";
 import { CtaBand, PageHeader, Section, SectionHeading } from "@/components/site/sections";
 
 export const Route = createFileRoute("/about")({
@@ -22,62 +22,81 @@ export const Route = createFileRoute("/about")({
     ],
     links: [{ rel: "canonical", href: "/about" }],
   }),
+  loader: async () => {
+    const bundle = await fetchAboutBundle();
+    return bundle;
+  },
   component: About,
 });
 
 function About() {
+  const { settings, values, story, idealClient } = Route.useLoaderData();
+  const why = story.filter((s) => s.kind === "why");
+  const founder = story.filter((s) => s.kind === "founder");
+  const vision = story.filter((s) => s.kind === "vision");
+  const fit = idealClient.filter((i) => i.kind === "fit");
+  const notFit = idealClient.filter((i) => i.kind === "not_fit");
+
   return (
     <>
       <PageHeader
         eyebrow="About"
         title="A technology partner, not a one-off vendor"
-        intro={company.positioning}
+        intro={settings?.positioning ?? ""}
       />
 
-      <Section bordered={false}>
-        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <SectionHeading eyebrow="Why we exist" title="From business problem to working system" />
-          <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
-            {story.why.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      <Section className="bg-surface">
-        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <SectionHeading eyebrow="Founder story" title="Research, engineering and applied AI" />
-          <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
-            {story.founder.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      <Section>
-        <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-          <SectionHeading eyebrow="Vision & mission" title="Where we are heading" />
-          <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
-            {story.vision.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        </div>
-      </Section>
-
-      <Section className="bg-surface">
-        <SectionHeading eyebrow="Values" title="What we hold to" />
-        <div className="mt-10 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
-          {values.map((value) => (
-            <div key={value.title} className="bg-card p-7">
-              <h3 className="text-lg font-semibold">{value.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{value.body}</p>
+      {why.length > 0 ? (
+        <Section bordered={false}>
+          <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+            <SectionHeading eyebrow="Why we exist" title="From business problem to working system" />
+            <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
+              {why.map((paragraph) => (
+                <p key={paragraph.id}>{paragraph.body}</p>
+              ))}
             </div>
-          ))}
-        </div>
-      </Section>
+          </div>
+        </Section>
+      ) : null}
+
+      {founder.length > 0 ? (
+        <Section className="bg-surface">
+          <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+            <SectionHeading eyebrow="Founder story" title="Research, engineering and applied AI" />
+            <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
+              {founder.map((paragraph) => (
+                <p key={paragraph.id}>{paragraph.body}</p>
+              ))}
+            </div>
+          </div>
+        </Section>
+      ) : null}
+
+      {vision.length > 0 ? (
+        <Section>
+          <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+            <SectionHeading eyebrow="Vision & mission" title="Where we are heading" />
+            <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
+              {vision.map((paragraph) => (
+                <p key={paragraph.id}>{paragraph.body}</p>
+              ))}
+            </div>
+          </div>
+        </Section>
+      ) : null}
+
+      {values.length > 0 ? (
+        <Section className="bg-surface">
+          <SectionHeading eyebrow="Values" title="What we hold to" />
+          <div className="mt-10 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+            {values.map((value) => (
+              <div key={value.id} className="bg-card p-7">
+                <h3 className="text-lg font-semibold">{value.title}</h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{value.body}</p>
+              </div>
+            ))}
+          </div>
+        </Section>
+      ) : null}
 
       <Section>
         <SectionHeading
@@ -87,31 +106,37 @@ function About() {
         />
       </Section>
 
-      <Section className="bg-surface">
-        <SectionHeading eyebrow="Fit" title="Who we work best with" />
-        <div className="mt-10 grid gap-8 md:grid-cols-2">
-          <div className="rounded-xl border border-border bg-card p-7">
-            <h3 className="text-base font-semibold">A good fit</h3>
-            <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
-              {idealClient.fit.map((item) => (
-                <li key={item} className="border-l-2 border-primary/60 pl-3">
-                  {item}
-                </li>
-              ))}
-            </ul>
+      {(fit.length + notFit.length) > 0 ? (
+        <Section className="bg-surface">
+          <SectionHeading eyebrow="Fit" title="Who we work best with" />
+          <div className="mt-10 grid gap-8 md:grid-cols-2">
+            {fit.length > 0 ? (
+              <div className="rounded-xl border border-border bg-card p-7">
+                <h3 className="text-base font-semibold">A good fit</h3>
+                <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
+                  {fit.map((item) => (
+                    <li key={item.id} className="border-l-2 border-primary/60 pl-3">
+                      {item.body}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {notFit.length > 0 ? (
+              <div className="rounded-xl border border-border bg-card p-7">
+                <h3 className="text-base font-semibold">Not a fit</h3>
+                <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
+                  {notFit.map((item) => (
+                    <li key={item.id} className="border-l-2 border-border pl-3">
+                      {item.body}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
-          <div className="rounded-xl border border-border bg-card p-7">
-            <h3 className="text-base font-semibold">Not a fit</h3>
-            <ul className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
-              {idealClient.notFit.map((item) => (
-                <li key={item} className="border-l-2 border-border pl-3">
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </Section>
+        </Section>
+      ) : null}
 
       <CtaBand />
     </>

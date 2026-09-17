@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqRouteImport } from './routes/faq'
@@ -18,6 +19,22 @@ import { Route as IndustriesRouteImport } from './routes/industries'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as TechnologiesRouteImport } from './routes/technologies'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAdminsRouteImport } from './routes/admin.admins'
+import { Route as AdminChromeRouteImport } from './routes/admin.chrome'
+import { Route as AdminEnquiriesRouteImport } from './routes/admin.enquiries'
+import { Route as AdminFaqRouteImport } from './routes/admin.faq'
+import { Route as AdminIndustriesRouteImport } from './routes/admin.industries'
+import { Route as AdminJobsRouteImport } from './routes/admin.jobs'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminMediaRouteImport } from './routes/admin.media'
+import { Route as AdminPagesRouteImport } from './routes/admin.pages'
+import { Route as AdminProcessRouteImport } from './routes/admin.process'
+import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
+import { Route as AdminServicesRouteImport } from './routes/admin.services'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminTeamRouteImport } from './routes/admin.team'
+import { Route as AdminTechnologiesRouteImport } from './routes/admin.technologies'
 import { Route as LegalCookiesRouteImport } from './routes/legal.cookies'
 import { Route as LegalImprintRouteImport } from './routes/legal.imprint'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
@@ -26,6 +43,10 @@ import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortfolioSlugRouteImport } from './routes/portfolio.$slug'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
+import { Route as AdminJobsIdRouteImport } from './routes/admin.jobs.$id'
+import { Route as AdminProjectsIdRouteImport } from './routes/admin.projects.$id'
+import { Route as AdminServicesIdRouteImport } from './routes/admin.services.$id'
+import { Route as AdminTeamIdRouteImport } from './routes/admin.team.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,6 +56,11 @@ const IndexRoute = IndexRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CareersRoute = CareersRouteImport.update({
@@ -71,6 +97,86 @@ const TechnologiesRoute = TechnologiesRouteImport.update({
   id: '/technologies',
   path: '/technologies',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAdminsRoute = AdminAdminsRouteImport.update({
+  id: '/admins',
+  path: '/admins',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminChromeRoute = AdminChromeRouteImport.update({
+  id: '/chrome',
+  path: '/chrome',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
+  id: '/enquiries',
+  path: '/enquiries',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFaqRoute = AdminFaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminIndustriesRoute = AdminIndustriesRouteImport.update({
+  id: '/industries',
+  path: '/industries',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminJobsRoute = AdminJobsRouteImport.update({
+  id: '/jobs',
+  path: '/jobs',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMediaRoute = AdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPagesRoute = AdminPagesRouteImport.update({
+  id: '/pages',
+  path: '/pages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProcessRoute = AdminProcessRouteImport.update({
+  id: '/process',
+  path: '/process',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProjectsRoute = AdminProjectsRouteImport.update({
+  id: '/projects',
+  path: '/projects',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminServicesRoute = AdminServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTeamRoute = AdminTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminTechnologiesRoute = AdminTechnologiesRouteImport.update({
+  id: '/technologies',
+  path: '/technologies',
+  getParentRoute: () => AdminRoute,
 } as any)
 const LegalCookiesRoute = LegalCookiesRouteImport.update({
   id: '/legal/cookies',
@@ -112,10 +218,31 @@ const ServicesSlugRoute = ServicesSlugRouteImport.update({
   path: '/services/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminJobsIdRoute = AdminJobsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminJobsRoute,
+} as any)
+const AdminProjectsIdRoute = AdminProjectsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminProjectsRoute,
+} as any)
+const AdminServicesIdRoute = AdminServicesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminServicesRoute,
+} as any)
+const AdminTeamIdRoute = AdminTeamIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminTeamRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
@@ -123,14 +250,34 @@ export interface FileRoutesByFullPath {
   '/process': typeof ProcessRoute
   '/team': typeof TeamRoute
   '/technologies': typeof TechnologiesRoute
+  '/admin/admins': typeof AdminAdminsRoute
+  '/admin/chrome': typeof AdminChromeRoute
+  '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/faq': typeof AdminFaqRoute
+  '/admin/industries': typeof AdminIndustriesRoute
+  '/admin/jobs': typeof AdminJobsRouteWithChildren
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
+  '/admin/pages': typeof AdminPagesRoute
+  '/admin/process': typeof AdminProcessRoute
+  '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/services': typeof AdminServicesRouteWithChildren
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/team': typeof AdminTeamRouteWithChildren
+  '/admin/technologies': typeof AdminTechnologiesRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/imprint': typeof LegalImprintRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/admin/jobs/$id': typeof AdminJobsIdRoute
+  '/admin/projects/$id': typeof AdminProjectsIdRoute
+  '/admin/services/$id': typeof AdminServicesIdRoute
+  '/admin/team/$id': typeof AdminTeamIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -142,19 +289,40 @@ export interface FileRoutesByTo {
   '/process': typeof ProcessRoute
   '/team': typeof TeamRoute
   '/technologies': typeof TechnologiesRoute
+  '/admin/admins': typeof AdminAdminsRoute
+  '/admin/chrome': typeof AdminChromeRoute
+  '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/faq': typeof AdminFaqRoute
+  '/admin/industries': typeof AdminIndustriesRoute
+  '/admin/jobs': typeof AdminJobsRouteWithChildren
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
+  '/admin/pages': typeof AdminPagesRoute
+  '/admin/process': typeof AdminProcessRoute
+  '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/services': typeof AdminServicesRouteWithChildren
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/team': typeof AdminTeamRouteWithChildren
+  '/admin/technologies': typeof AdminTechnologiesRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/imprint': typeof LegalImprintRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/admin': typeof AdminIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
   '/services': typeof ServicesIndexRoute
+  '/admin/jobs/$id': typeof AdminJobsIdRoute
+  '/admin/projects/$id': typeof AdminProjectsIdRoute
+  '/admin/services/$id': typeof AdminServicesIdRoute
+  '/admin/team/$id': typeof AdminTeamIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
@@ -162,20 +330,41 @@ export interface FileRoutesById {
   '/process': typeof ProcessRoute
   '/team': typeof TeamRoute
   '/technologies': typeof TechnologiesRoute
+  '/admin/admins': typeof AdminAdminsRoute
+  '/admin/chrome': typeof AdminChromeRoute
+  '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/faq': typeof AdminFaqRoute
+  '/admin/industries': typeof AdminIndustriesRoute
+  '/admin/jobs': typeof AdminJobsRouteWithChildren
+  '/admin/login': typeof AdminLoginRoute
+  '/admin/media': typeof AdminMediaRoute
+  '/admin/pages': typeof AdminPagesRoute
+  '/admin/process': typeof AdminProcessRoute
+  '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/services': typeof AdminServicesRouteWithChildren
+  '/admin/settings': typeof AdminSettingsRoute
+  '/admin/team': typeof AdminTeamRouteWithChildren
+  '/admin/technologies': typeof AdminTechnologiesRoute
   '/legal/cookies': typeof LegalCookiesRoute
   '/legal/imprint': typeof LegalImprintRoute
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/terms': typeof LegalTermsRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/admin/jobs/$id': typeof AdminJobsIdRoute
+  '/admin/projects/$id': typeof AdminProjectsIdRoute
+  '/admin/services/$id': typeof AdminServicesIdRoute
+  '/admin/team/$id': typeof AdminTeamIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/careers'
     | '/contact'
     | '/faq'
@@ -183,14 +372,34 @@ export interface FileRouteTypes {
     | '/process'
     | '/team'
     | '/technologies'
+    | '/admin/admins'
+    | '/admin/chrome'
+    | '/admin/enquiries'
+    | '/admin/faq'
+    | '/admin/industries'
+    | '/admin/jobs'
+    | '/admin/login'
+    | '/admin/media'
+    | '/admin/pages'
+    | '/admin/process'
+    | '/admin/projects'
+    | '/admin/services'
+    | '/admin/settings'
+    | '/admin/team'
+    | '/admin/technologies'
     | '/legal/cookies'
     | '/legal/imprint'
     | '/legal/privacy'
     | '/legal/terms'
     | '/portfolio/$slug'
     | '/services/$slug'
+    | '/admin/'
     | '/portfolio/'
     | '/services/'
+    | '/admin/jobs/$id'
+    | '/admin/projects/$id'
+    | '/admin/services/$id'
+    | '/admin/team/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -202,18 +411,39 @@ export interface FileRouteTypes {
     | '/process'
     | '/team'
     | '/technologies'
+    | '/admin/admins'
+    | '/admin/chrome'
+    | '/admin/enquiries'
+    | '/admin/faq'
+    | '/admin/industries'
+    | '/admin/jobs'
+    | '/admin/login'
+    | '/admin/media'
+    | '/admin/pages'
+    | '/admin/process'
+    | '/admin/projects'
+    | '/admin/services'
+    | '/admin/settings'
+    | '/admin/team'
+    | '/admin/technologies'
     | '/legal/cookies'
     | '/legal/imprint'
     | '/legal/privacy'
     | '/legal/terms'
     | '/portfolio/$slug'
     | '/services/$slug'
+    | '/admin'
     | '/portfolio'
     | '/services'
+    | '/admin/jobs/$id'
+    | '/admin/projects/$id'
+    | '/admin/services/$id'
+    | '/admin/team/$id'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/careers'
     | '/contact'
     | '/faq'
@@ -221,19 +451,40 @@ export interface FileRouteTypes {
     | '/process'
     | '/team'
     | '/technologies'
+    | '/admin/admins'
+    | '/admin/chrome'
+    | '/admin/enquiries'
+    | '/admin/faq'
+    | '/admin/industries'
+    | '/admin/jobs'
+    | '/admin/login'
+    | '/admin/media'
+    | '/admin/pages'
+    | '/admin/process'
+    | '/admin/projects'
+    | '/admin/services'
+    | '/admin/settings'
+    | '/admin/team'
+    | '/admin/technologies'
     | '/legal/cookies'
     | '/legal/imprint'
     | '/legal/privacy'
     | '/legal/terms'
     | '/portfolio/$slug'
     | '/services/$slug'
+    | '/admin/'
     | '/portfolio/'
     | '/services/'
+    | '/admin/jobs/$id'
+    | '/admin/projects/$id'
+    | '/admin/services/$id'
+    | '/admin/team/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
@@ -265,6 +516,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/careers': {
@@ -315,6 +573,118 @@ declare module '@tanstack/react-router' {
       fullPath: '/technologies'
       preLoaderRoute: typeof TechnologiesRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/admins': {
+      id: '/admin/admins'
+      path: '/admins'
+      fullPath: '/admin/admins'
+      preLoaderRoute: typeof AdminAdminsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/chrome': {
+      id: '/admin/chrome'
+      path: '/chrome'
+      fullPath: '/admin/chrome'
+      preLoaderRoute: typeof AdminChromeRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/enquiries': {
+      id: '/admin/enquiries'
+      path: '/enquiries'
+      fullPath: '/admin/enquiries'
+      preLoaderRoute: typeof AdminEnquiriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/faq': {
+      id: '/admin/faq'
+      path: '/faq'
+      fullPath: '/admin/faq'
+      preLoaderRoute: typeof AdminFaqRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/industries': {
+      id: '/admin/industries'
+      path: '/industries'
+      fullPath: '/admin/industries'
+      preLoaderRoute: typeof AdminIndustriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/jobs': {
+      id: '/admin/jobs'
+      path: '/jobs'
+      fullPath: '/admin/jobs'
+      preLoaderRoute: typeof AdminJobsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/media': {
+      id: '/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/pages': {
+      id: '/admin/pages'
+      path: '/pages'
+      fullPath: '/admin/pages'
+      preLoaderRoute: typeof AdminPagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/process': {
+      id: '/admin/process'
+      path: '/process'
+      fullPath: '/admin/process'
+      preLoaderRoute: typeof AdminProcessRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/projects': {
+      id: '/admin/projects'
+      path: '/projects'
+      fullPath: '/admin/projects'
+      preLoaderRoute: typeof AdminProjectsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/services': {
+      id: '/admin/services'
+      path: '/services'
+      fullPath: '/admin/services'
+      preLoaderRoute: typeof AdminServicesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/team': {
+      id: '/admin/team'
+      path: '/team'
+      fullPath: '/admin/team'
+      preLoaderRoute: typeof AdminTeamRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/technologies': {
+      id: '/admin/technologies'
+      path: '/technologies'
+      fullPath: '/admin/technologies'
+      preLoaderRoute: typeof AdminTechnologiesRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/legal/cookies': {
       id: '/legal/cookies'
@@ -372,12 +742,129 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/jobs/$id': {
+      id: '/admin/jobs/$id'
+      path: '/$id'
+      fullPath: '/admin/jobs/$id'
+      preLoaderRoute: typeof AdminJobsIdRouteImport
+      parentRoute: typeof AdminJobsRoute
+    }
+    '/admin/projects/$id': {
+      id: '/admin/projects/$id'
+      path: '/$id'
+      fullPath: '/admin/projects/$id'
+      preLoaderRoute: typeof AdminProjectsIdRouteImport
+      parentRoute: typeof AdminProjectsRoute
+    }
+    '/admin/services/$id': {
+      id: '/admin/services/$id'
+      path: '/$id'
+      fullPath: '/admin/services/$id'
+      preLoaderRoute: typeof AdminServicesIdRouteImport
+      parentRoute: typeof AdminServicesRoute
+    }
+    '/admin/team/$id': {
+      id: '/admin/team/$id'
+      path: '/$id'
+      fullPath: '/admin/team/$id'
+      preLoaderRoute: typeof AdminTeamIdRouteImport
+      parentRoute: typeof AdminTeamRoute
+    }
   }
 }
+
+interface AdminJobsRouteChildren {
+  AdminJobsIdRoute: typeof AdminJobsIdRoute
+}
+
+const AdminJobsRouteChildren: AdminJobsRouteChildren = {
+  AdminJobsIdRoute: AdminJobsIdRoute,
+}
+
+const AdminJobsRouteWithChildren = AdminJobsRoute._addFileChildren(
+  AdminJobsRouteChildren,
+)
+
+interface AdminProjectsRouteChildren {
+  AdminProjectsIdRoute: typeof AdminProjectsIdRoute
+}
+
+const AdminProjectsRouteChildren: AdminProjectsRouteChildren = {
+  AdminProjectsIdRoute: AdminProjectsIdRoute,
+}
+
+const AdminProjectsRouteWithChildren = AdminProjectsRoute._addFileChildren(
+  AdminProjectsRouteChildren,
+)
+
+interface AdminServicesRouteChildren {
+  AdminServicesIdRoute: typeof AdminServicesIdRoute
+}
+
+const AdminServicesRouteChildren: AdminServicesRouteChildren = {
+  AdminServicesIdRoute: AdminServicesIdRoute,
+}
+
+const AdminServicesRouteWithChildren = AdminServicesRoute._addFileChildren(
+  AdminServicesRouteChildren,
+)
+
+interface AdminTeamRouteChildren {
+  AdminTeamIdRoute: typeof AdminTeamIdRoute
+}
+
+const AdminTeamRouteChildren: AdminTeamRouteChildren = {
+  AdminTeamIdRoute: AdminTeamIdRoute,
+}
+
+const AdminTeamRouteWithChildren = AdminTeamRoute._addFileChildren(
+  AdminTeamRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminAdminsRoute: typeof AdminAdminsRoute
+  AdminChromeRoute: typeof AdminChromeRoute
+  AdminEnquiriesRoute: typeof AdminEnquiriesRoute
+  AdminFaqRoute: typeof AdminFaqRoute
+  AdminIndustriesRoute: typeof AdminIndustriesRoute
+  AdminJobsRoute: typeof AdminJobsRouteWithChildren
+  AdminLoginRoute: typeof AdminLoginRoute
+  AdminMediaRoute: typeof AdminMediaRoute
+  AdminPagesRoute: typeof AdminPagesRoute
+  AdminProcessRoute: typeof AdminProcessRoute
+  AdminProjectsRoute: typeof AdminProjectsRouteWithChildren
+  AdminServicesRoute: typeof AdminServicesRouteWithChildren
+  AdminSettingsRoute: typeof AdminSettingsRoute
+  AdminTeamRoute: typeof AdminTeamRouteWithChildren
+  AdminTechnologiesRoute: typeof AdminTechnologiesRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAdminsRoute: AdminAdminsRoute,
+  AdminChromeRoute: AdminChromeRoute,
+  AdminEnquiriesRoute: AdminEnquiriesRoute,
+  AdminFaqRoute: AdminFaqRoute,
+  AdminIndustriesRoute: AdminIndustriesRoute,
+  AdminJobsRoute: AdminJobsRouteWithChildren,
+  AdminLoginRoute: AdminLoginRoute,
+  AdminMediaRoute: AdminMediaRoute,
+  AdminPagesRoute: AdminPagesRoute,
+  AdminProcessRoute: AdminProcessRoute,
+  AdminProjectsRoute: AdminProjectsRouteWithChildren,
+  AdminServicesRoute: AdminServicesRouteWithChildren,
+  AdminSettingsRoute: AdminSettingsRoute,
+  AdminTeamRoute: AdminTeamRouteWithChildren,
+  AdminTechnologiesRoute: AdminTechnologiesRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,

@@ -4,8 +4,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { company } from "@/content/company";
-import { services } from "@/content/services";
+import { fetchServices } from "@/lib/cms";
 import { supabase } from "@/integrations/supabase/client";
 import { Container, PageHeader, Section } from "@/components/site/sections";
 
@@ -27,6 +26,13 @@ export const Route = createFileRoute("/contact")({
     ],
     links: [{ rel: "canonical", href: "/contact" }],
   }),
+  loader: async () => {
+    const [services, { data: settings }] = await Promise.all([
+      fetchServices(),
+      supabase.from("site_settings").select("*").maybeSingle(),
+    ]);
+    return { services, settings: settings ?? null };
+  },
   component: Contact,
 });
 
@@ -44,12 +50,17 @@ const enquirySchema = z.object({
   email: z.string().trim().email("Please enter a valid email address").max(255),
   company: z.string().trim().max(120).optional(),
   phone: z.string().trim().max(40).optional(),
-  service: z.string().trim().max(120).optional(),
+  service_id: z.string().uuid().optional().or(z.literal("")),
   budget: z.string().trim().max(60).optional(),
-  message: z.string().trim().min(20, "Please describe the project in a little more detail").max(4000),
+  message: z
+    .string()
+    .trim()
+    .min(20, "Please describe the project in a little more detail")
+    .max(4000),
 });
 
 function Contact() {
+  const { services, settings } = Route.useLoaderData();
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
@@ -73,12 +84,18 @@ function Contact() {
 
     setErrors({});
     setSubmitting(true);
+    const serviceId = parsed.data.service_id || null;
+    const serviceName = serviceId
+      ? services.find((s) => s.id === serviceId)?.name ?? null
+      : null;
+
     const { error } = await supabase.from("enquiries").insert({
       name: parsed.data.name,
       email: parsed.data.email,
       company: parsed.data.company || null,
       phone: parsed.data.phone || null,
-      service: parsed.data.service || null,
+      service_id: serviceId,
+      service_name_snapshot: serviceName,
       budget: parsed.data.budget || null,
       message: parsed.data.message,
     });
@@ -93,6 +110,11 @@ function Contact() {
     setDone(true);
     toast.success("Enquiry received. We will reply within two working days.");
   }
+
+  const email = settings?.email ?? "hello@example.com";
+  const phone = settings?.phone ?? "";
+  const phoneHref = settings?.phone_href ?? "";
+  const registeredIn = settings?.registered_in ?? "";
 
   return (
     <>
@@ -110,8 +132,8 @@ function Contact() {
                 <div className="rounded-xl border border-primary/40 bg-card p-8">
                   <h2 className="text-xl font-semibold">Thank you — your enquiry is with us</h2>
                   <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                    We read every enquiry personally and reply within two working days. If it is
-                    urgent, call {company.phone}.
+                    We read every enquiry personally and reply within two working days.
+                    {phone ? ` If it is urgent, call ${phone}.` : ""}
                   </p>
                   <button
                     type="button"
@@ -140,14 +162,13 @@ function Contact() {
                     <label className="block">
                       <span className="text-sm font-medium">What do you need?</span>
                       <select
-                        name="service"
+                        name="service_id"
                         defaultValue=""
                         className="mt-2 h-11 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:border-primary"
                       >
                         <option value="">Select an area</option>
-                        <option value="Consultation call">Consultation call first</option>
                         {services.map((service) => (
-                          <option key={service.slug} value={service.name}>
+                          <option key={service.id} value={service.id}>
                             {service.name}
                           </option>
                         ))}
@@ -208,20 +229,24 @@ function Contact() {
                 <ul className="mt-4 space-y-4 text-sm">
                   <li className="flex gap-3">
                     <Mail className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <a className="hover:text-primary" href={`mailto:${company.email}`}>
-                      {company.email}
+                    <a className="hover:text-primary" href={`mailto:${email}`}>
+                      {email}
                     </a>
                   </li>
-                  <li className="flex gap-3">
-                    <Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <a className="hover:text-primary" href={`tel:${company.phoneHref}`}>
-                      {company.phone}
-                    </a>
-                  </li>
-                  <li className="flex gap-3 text-muted-foreground">
-                    <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    <span>{company.registeredIn}</span>
-                  </li>
+                  {phone ? (
+                    <li className="flex gap-3">
+                      <Phone className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <a className="hover:text-primary" href={`tel:${phoneHref}`}>
+                        {phone}
+                      </a>
+                    </li>
+                  ) : null}
+                  {registeredIn ? (
+                    <li className="flex gap-3 text-muted-foreground">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span>{registeredIn}</span>
+                    </li>
+                  ) : null}
                 </ul>
               </div>
 

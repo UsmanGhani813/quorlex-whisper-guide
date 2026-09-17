@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { company } from "@/content/company";
 import { LegalBlock, LegalPage } from "@/components/site/legal";
+import { useSiteChrome } from "./__root";
 
 export const Route = createFileRoute("/legal/imprint")({
   head: () => ({
@@ -22,6 +22,9 @@ export const Route = createFileRoute("/legal/imprint")({
 });
 
 function Imprint() {
+  const { settings } = useSiteChrome();
+  const s = settings ?? ({} as Record<string, string | null>);
+
   return (
     <LegalPage
       eyebrow="Legal"
@@ -30,31 +33,27 @@ function Imprint() {
     >
       <LegalBlock heading="Company details">
         <p>
-          {company.name}
+          {s.company_name ?? "Quorlex Soft"}
           <br />
-          Registered in {company.registeredIn}
-          <br />
-          Company number: {company.companyNumber} (placeholder — to be replaced)
-          <br />
-          {company.registeredAddress}
-          <br />
-          {company.legalStructure}
+          {s.registered_in ? <>Registered in {s.registered_in}<br /></> : null}
+          {s.company_number ? <>Company number: {s.company_number}<br /></> : null}
+          {s.registered_address ? <>{s.registered_address}<br /></> : null}
+          {s.legal_structure}
         </p>
       </LegalBlock>
 
       <LegalBlock heading="Contact">
         <p>
-          Email: {company.email}
-          <br />
-          Phone: {company.phone}
+          {s.email ? <>Email: {s.email}<br /></> : null}
+          {s.phone ? <>Phone: {s.phone}</> : null}
         </p>
       </LegalBlock>
 
       <LegalBlock heading="Responsibility for content">
         <p>
           Responsibility for the content of this website rests with the company management of{" "}
-          {company.name} at the address above. Name of the responsible person to be added during
-          legal review.
+          {s.company_name ?? "Quorlex Soft"} at the address above. Name of the responsible person to
+          be added during legal review.
         </p>
       </LegalBlock>
 

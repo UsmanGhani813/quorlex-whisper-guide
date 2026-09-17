@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 
-import { technologies, securityPractices } from "@/content/technologies";
+import { fetchTechnologyGroups } from "@/lib/cms";
 import { CtaBand, PageHeader, Section, SectionHeading } from "@/components/site/sections";
+
+const securityPractices = [
+  "Threat modelling and access control review",
+  "Dependency and secret hygiene",
+  "Automated tests and CI security checks",
+  "Backup, recovery and monitoring",
+];
 
 export const Route = createFileRoute("/technologies")({
   head: () => ({
@@ -22,10 +29,15 @@ export const Route = createFileRoute("/technologies")({
     ],
     links: [{ rel: "canonical", href: "/technologies" }],
   }),
+  loader: async () => {
+    const technologies = await fetchTechnologyGroups();
+    return { technologies };
+  },
   component: Technologies,
 });
 
 function Technologies() {
+  const { technologies } = Route.useLoaderData();
   return (
     <>
       <PageHeader
@@ -37,17 +49,17 @@ function Technologies() {
       <Section bordered={false}>
         <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
           {technologies.map((group) => (
-            <div key={group.name} className="bg-card p-7">
+            <div key={group.id} className="bg-card p-7">
               <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-primary">
                 {group.name}
               </h2>
               <ul className="mt-4 flex flex-wrap gap-2">
                 {group.items.map((item) => (
                   <li
-                    key={item}
+                    key={item.id}
                     className="rounded-full border border-border px-3 py-1 text-sm text-muted-foreground"
                   >
-                    {item}
+                    {item.name}
                   </li>
                 ))}
               </ul>

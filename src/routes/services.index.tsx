@@ -1,62 +1,112 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
-import { services } from "@/content/services";
-import { CtaBand, PageHeader, Section } from "@/components/site/sections";
+import { fetchServices } from "@/lib/cms";
+import { CtaBand, PageHeader, Section, SectionHeading } from "@/components/site/sections";
 
 export const Route = createFileRoute("/services/")({
   head: () => ({
     meta: [
-      { title: "Services — Software, SaaS, AI, Mobile and Cloud | Quorlex Soft" },
+      { title: "Services — Quorlex Soft" },
       {
         name: "description",
         content:
-          "Custom software, SaaS platforms, AI systems, mobile apps, cloud infrastructure, automation, web, e-commerce, product design, MVPs and technology consulting.",
+          "Custom software, SaaS platforms, AI systems, mobile apps, cloud infrastructure and workflow automation, delivered by a technology partner rather than a one-off supplier.",
       },
       { property: "og:title", content: "Services — Quorlex Soft" },
       {
         property: "og:description",
-        content:
-          "Ten capability areas covering the full path from business problem to supported production system.",
+        content: "The technology and product engineering services Quorlex Soft delivers.",
       },
       { property: "og:url", content: "/services" },
     ],
     links: [{ rel: "canonical", href: "/services" }],
   }),
-  component: ServicesIndex,
+  loader: async () => {
+    const services = await fetchServices();
+    return {
+      services,
+      coreServices: services.filter((s) => s.is_core),
+      otherServices: services.filter((s) => !s.is_core),
+    };
+  },
+  component: Services,
 });
 
-function ServicesIndex() {
+function Services() {
+  const { coreServices, otherServices } = Route.useLoaderData();
+
   return (
     <>
       <PageHeader
         eyebrow="Services"
-        title="Capabilities across the full technology stack"
-        intro="Each area below is deliverable today. Project teams are assembled from a network of engineers, AI specialists and designers according to what the work requires."
+        title="One partner across the full technology stack"
+        intro="Six core areas we lead engagements in, plus supporting services. Every engagement is scoped in writing before development begins, with a phased plan and clear ownership."
       />
 
       <Section bordered={false}>
-        <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
-          {services.map((service) => (
+        <SectionHeading
+          eyebrow="Core capabilities"
+          title="Where we take the lead"
+          intro="Six areas where we own the architecture, delivery and support model end to end."
+        />
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
+          {coreServices.map((service) => (
             <Link
               key={service.slug}
               to="/services/$slug"
               params={{ slug: service.slug }}
-              className="group bg-card p-7 transition-colors hover:bg-secondary"
+              className="group rounded-xl border border-border bg-card p-7 transition-colors hover:border-primary/50"
             >
-              <h2 className="text-lg font-semibold">{service.name}</h2>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{service.short}</p>
-              <p className="mt-4 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                {service.timeline}
+              <h2 className="text-xl font-semibold">{service.name}</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {service.summary}
               </p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
-                Details
+              {service.technologies.length ? (
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {service.technologies.slice(0, 6).map((tech) => (
+                    <li
+                      key={tech.id}
+                      className="rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground"
+                    >
+                      {tech.name}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+              <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                Explore
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </span>
             </Link>
           ))}
         </div>
       </Section>
+
+      {otherServices.length > 0 ? (
+        <Section className="bg-surface">
+          <SectionHeading
+            eyebrow="Supporting services"
+            title="Design, consulting, MVPs and specialist work"
+            intro="Ancillary services we deliver alongside — or independently of — the core engineering practice."
+          />
+          <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2">
+            {otherServices.map((service) => (
+              <Link
+                key={service.slug}
+                to="/services/$slug"
+                params={{ slug: service.slug }}
+                className="group bg-card p-6 transition-colors hover:bg-secondary"
+              >
+                <h3 className="text-base font-semibold">{service.name}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {service.short}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </Section>
+      ) : null}
 
       <CtaBand />
     </>

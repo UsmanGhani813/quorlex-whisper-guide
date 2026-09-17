@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { company } from "@/content/company";
 import { LegalBlock, LegalPage } from "@/components/site/legal";
+import { useSiteChrome } from "./__root";
 
 export const Route = createFileRoute("/legal/privacy")({
   head: () => ({
@@ -13,7 +13,10 @@ export const Route = createFileRoute("/legal/privacy")({
           "How Quorlex Soft collects, uses, stores and protects personal data submitted through this website, and the rights you have over that data.",
       },
       { property: "og:title", content: "Privacy policy — Quorlex Soft" },
-      { property: "og:description", content: "How we handle personal data submitted through this website." },
+      {
+        property: "og:description",
+        content: "How we handle personal data submitted through this website.",
+      },
       { property: "og:url", content: "/legal/privacy" },
     ],
     links: [{ rel: "canonical", href: "/legal/privacy" }],
@@ -22,17 +25,24 @@ export const Route = createFileRoute("/legal/privacy")({
 });
 
 function Privacy() {
+  const { settings } = useSiteChrome();
+  const name = settings?.company_name ?? "Quorlex Soft";
+  const registeredIn = settings?.registered_in ?? "";
+  const companyNumber = settings?.company_number ?? "";
+  const email = settings?.email ?? "";
+
   return (
     <LegalPage
       eyebrow="Legal"
       title="Privacy policy"
-      intro={`How ${company.name} handles personal data submitted through this website.`}
+      intro={`How ${name} handles personal data submitted through this website.`}
     >
       <LegalBlock heading="Who we are">
         <p>
-          {company.name}, registered in {company.registeredIn}, company number{" "}
-          {company.companyNumber} (placeholder), is the data controller for personal data submitted
-          through this website. Contact: {company.email}.
+          {name}
+          {registeredIn ? `, registered in ${registeredIn}` : ""}
+          {companyNumber ? `, company number ${companyNumber}` : ""}, is the data controller for
+          personal data submitted through this website. Contact: {email}.
         </p>
       </LegalBlock>
 
@@ -71,9 +81,9 @@ function Privacy() {
       <LegalBlock heading="Your rights">
         <p>
           You may request access to, correction of, or deletion of your personal data, object to
-          processing, or request a copy of the data you provided. Email {company.email} and we will
-          respond within the period required by applicable law. You may also complain to your
-          national data protection authority.
+          processing, or request a copy of the data you provided. Email {email} and we will respond
+          within the period required by applicable law. You may also complain to your national data
+          protection authority.
         </p>
       </LegalBlock>
 

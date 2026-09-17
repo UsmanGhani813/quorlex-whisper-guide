@@ -1,70 +1,63 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { industries } from "@/content/industries";
-import { company } from "@/content/company";
-import { CtaBand, PageHeader, Section, SectionHeading } from "@/components/site/sections";
+import { fetchIndustries } from "@/lib/cms";
+import { CtaBand, PageHeader, Section } from "@/components/site/sections";
 
 export const Route = createFileRoute("/industries")({
   head: () => ({
     meta: [
-      { title: "Industries we build for — Quorlex Soft" },
+      { title: "Industries — Quorlex Soft" },
       {
         name: "description",
         content:
-          "Technology, e-commerce, fintech, proptech, healthtech, edtech, logistics, manufacturing, professional services, hospitality, media and startups.",
+          "Sectors Quorlex Soft builds technology for, including SaaS, e-commerce, fintech, proptech, healthtech, edtech, logistics, manufacturing and professional services.",
       },
       { property: "og:title", content: "Industries — Quorlex Soft" },
       {
         property: "og:description",
-        content: "Sectors we build software, AI and cloud systems for, and the systems each typically needs.",
+        content: "Where we deliver technology, and typical systems in each sector.",
       },
       { property: "og:url", content: "/industries" },
     ],
     links: [{ rel: "canonical", href: "/industries" }],
   }),
+  loader: async () => {
+    const industries = await fetchIndustries();
+    return { industries };
+  },
   component: Industries,
 });
 
 function Industries() {
+  const { industries } = Route.useLoaderData();
+
   return (
     <>
       <PageHeader
         eyebrow="Industries"
-        title="Industry-flexible, problem-specific"
-        intro="We are not tied to a single sector. What matters is a clearly defined business problem and a system worth building properly."
+        title="Sectors we build technology for"
+        intro="We work across most information-driven sectors. The common thread is systems where data, permissions and integration matter as much as the interface."
       />
 
       <Section bordered={false}>
-        <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
           {industries.map((industry) => (
             <article key={industry.slug} className="bg-card p-7">
               <h2 className="text-lg font-semibold">{industry.name}</h2>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{industry.body}</p>
-              <ul className="mt-5 flex flex-wrap gap-2">
-                {industry.examples.map((example) => (
-                  <li
-                    key={example}
-                    className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground"
-                  >
-                    {example}
-                  </li>
-                ))}
-              </ul>
+              {industry.examples.length > 0 ? (
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {industry.examples.map((ex) => (
+                    <li
+                      key={ex}
+                      className="rounded-full border border-border px-2.5 py-1 text-xs text-muted-foreground"
+                    >
+                      {ex}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </article>
-          ))}
-        </div>
-      </Section>
-
-      <Section className="bg-surface">
-        <SectionHeading eyebrow="Markets" title="Where we work" />
-        <div className="mt-8 flex flex-wrap gap-2">
-          {company.markets.map((market) => (
-            <span
-              key={market}
-              className="rounded-full border border-border bg-card px-4 py-2 text-sm text-muted-foreground"
-            >
-              {market}
-            </span>
           ))}
         </div>
       </Section>

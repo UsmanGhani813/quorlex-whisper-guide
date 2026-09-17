@@ -1,101 +1,78 @@
 import { Link } from "@tanstack/react-router";
 
 import { Container } from "./sections";
-import { company } from "@/content/company";
-import { coreServiceSlugs, getService } from "@/content/services";
+import type { SiteChrome } from "@/lib/cms";
 
-const companyLinks = [
-  { to: "/about", label: "About" },
-  { to: "/process", label: "Process" },
-  { to: "/technologies", label: "Technologies" },
-  { to: "/portfolio", label: "Work" },
-  { to: "/team", label: "Team" },
-  { to: "/careers", label: "Careers" },
-  { to: "/faq", label: "FAQ" },
-  { to: "/contact", label: "Contact" },
-] as const;
+export function Footer({ chrome }: { chrome: SiteChrome }) {
+  const settings = chrome.settings;
+  const companyName = settings?.company_name ?? "Quorlex Soft";
+  const tagline = settings?.tagline ?? "";
+  const email = settings?.email ?? "";
+  const phone = settings?.phone ?? "";
+  const phoneHref = settings?.phone_href ?? "";
+  const registeredIn = settings?.registered_in ?? "";
+  const registeredAddress = settings?.registered_address ?? "";
+  const companyNumber = settings?.company_number ?? "";
+  const copyright =
+    settings?.copyright_text ??
+    `© ${new Date().getFullYear()} ${companyName}. All rights reserved.`;
 
-const legalLinks = [
-  { to: "/legal/privacy", label: "Privacy policy" },
-  { to: "/legal/cookies", label: "Cookie policy" },
-  { to: "/legal/terms", label: "Terms of service" },
-  { to: "/legal/imprint", label: "Imprint" },
-] as const;
-
-export function Footer() {
   return (
     <footer className="border-t border-border bg-surface">
       <Container className="py-14">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-1">
-            <span className="font-display text-lg font-semibold">{company.name}</span>
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{company.tagline}</p>
+            <span className="font-display text-lg font-semibold">{companyName}</span>
+            {tagline ? (
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{tagline}</p>
+            ) : null}
             <p className="mt-4 text-sm text-muted-foreground">
-              <a className="hover:text-foreground" href={`mailto:${company.email}`}>
-                {company.email}
-              </a>
-              <br />
-              <a className="hover:text-foreground" href={`tel:${company.phoneHref}`}>
-                {company.phone}
-              </a>
+              {email ? (
+                <>
+                  <a className="hover:text-foreground" href={`mailto:${email}`}>
+                    {email}
+                  </a>
+                  <br />
+                </>
+              ) : null}
+              {phone ? (
+                <a className="hover:text-foreground" href={`tel:${phoneHref}`}>
+                  {phone}
+                </a>
+              ) : null}
             </p>
           </div>
 
-          <div>
-            <h3 className="text-sm font-semibold">Services</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {coreServiceSlugs.map((slug) => {
-                const service = getService(slug);
-                if (!service) return null;
-                return (
-                  <li key={slug}>
-                    <Link
-                      to="/services/$slug"
-                      params={{ slug }}
-                      className="transition-colors hover:text-foreground"
-                    >
-                      {service.name}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold">Company</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {companyLinks.map((link) => (
-                <li key={link.to}>
-                  <Link to={link.to} className="transition-colors hover:text-foreground">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-sm font-semibold">Legal</h3>
-            <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-              {legalLinks.map((link) => (
-                <li key={link.to}>
-                  <Link to={link.to} className="transition-colors hover:text-foreground">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {chrome.footerSections
+            .filter((s) => s.is_enabled)
+            .map((section) => (
+              <div key={section.id}>
+                <h3 className="text-sm font-semibold">{section.title}</h3>
+                <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
+                  {section.links
+                    .filter((l) => l.is_enabled)
+                    .map((link) => (
+                      <li key={link.id}>
+                        <Link
+                          to={link.href}
+                          className="transition-colors hover:text-foreground"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ))}
         </div>
 
         <div className="mt-12 border-t border-border pt-6 text-xs leading-relaxed text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} {company.name}. Registered in {company.registeredIn}.
-            Company number {company.companyNumber} (placeholder — to be replaced with the
-            registered company number).
+            {copyright}
+            {registeredIn ? ` Registered in ${registeredIn}.` : ""}
+            {companyNumber ? ` Company number ${companyNumber}.` : ""}
           </p>
-          <p className="mt-2">{company.registeredAddress}</p>
+          {registeredAddress ? <p className="mt-2">{registeredAddress}</p> : null}
         </div>
       </Container>
     </footer>
