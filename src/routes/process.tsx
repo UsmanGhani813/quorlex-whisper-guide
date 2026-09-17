@@ -37,7 +37,8 @@ function Process() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="Process"
         title="From business problem to supported system"
@@ -77,7 +78,8 @@ function Process() {
         </ol>
       </Section>
 
-      <CtaBand />
+      <CtaBand />        </>
+      )}
     </>
   );
 }

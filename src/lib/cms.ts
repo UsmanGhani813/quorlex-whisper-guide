@@ -427,7 +427,7 @@ export type InsightsPost = {
 export async function fetchPageWithSections(slug: string) {
   const sections = await fetchPageSections(slug);
   if (sections.length === 0) return { sections: [], data: null as unknown };
-  const [services, industries, projects, processSteps, team, founder, insights] =
+  const [services, industries, projects, processSteps, team, founder, insights, faqs, techGroups, settings] =
     await Promise.all([
       fetchServices(),
       fetchIndustries(),
@@ -436,6 +436,9 @@ export async function fetchPageWithSections(slug: string) {
       fetchTeam(),
       fetchTeamMemberByName("Malik Aftab Hussain"),
       fetchInsights(),
+      fetchFaqs(),
+      fetchTechnologyGroups(),
+      supabase.from("site_settings").select("*").maybeSingle().then((r) => r.data),
     ]);
   return {
     sections,
@@ -447,6 +450,9 @@ export async function fetchPageWithSections(slug: string) {
       featuredMember: founder,
       members: team.members.filter((m) => !m.is_demo),
       insightsCount: insights.length,
+      faqs,
+      technologyGroups: techGroups,
+      settings,
     },
   };
 }

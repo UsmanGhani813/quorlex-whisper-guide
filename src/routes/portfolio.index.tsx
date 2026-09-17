@@ -72,7 +72,8 @@ function Portfolio() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="Work"
         title="Demonstration case studies"
@@ -156,6 +157,8 @@ function Portfolio() {
       </Section>
 
       <CtaBand />
+        </>
+      )}
     </>
   );
 }

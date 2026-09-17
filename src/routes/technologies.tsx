@@ -44,7 +44,8 @@ function Technologies() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="Technologies"
         title="Tools chosen for fit and longevity"
@@ -92,7 +93,8 @@ function Technologies() {
         </ul>
       </Section>
 
-      <CtaBand />
+      <CtaBand />        </>
+      )}
     </>
   );
 }

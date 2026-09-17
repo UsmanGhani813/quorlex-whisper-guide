@@ -43,7 +43,8 @@ function Industries() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="Industries"
         title="Sectors we build technology for"
@@ -73,7 +74,8 @@ function Industries() {
         </div>
       </Section>
 
-      <CtaBand />
+      <CtaBand />        </>
+      )}
     </>
   );
 }

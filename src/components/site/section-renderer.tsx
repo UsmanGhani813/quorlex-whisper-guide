@@ -21,9 +21,12 @@ import {
 } from "lucide-react";
 
 import type {
+  FaqRow,
   PageSectionRow,
   ProcessStepWithOutputs,
   ServiceWithBullets,
+  SiteSettingsRow,
+  TechnologyGroupWithItems,
   TeamMemberWithExpertise,
 } from "@/lib/cms";
 import type { IndustryWithExamples, ProjectFull } from "@/lib/cms";
@@ -67,6 +70,9 @@ export type SectionData = {
   featuredMember: TeamMemberWithExpertise | null;
   members: TeamMemberWithExpertise[];
   insightsCount: number;
+  faqs?: FaqRow[];
+  technologyGroups?: TechnologyGroupWithItems[];
+  settings?: SiteSettingsRow | null;
 };
 
 // ---------- section renderers ----------
@@ -516,6 +522,145 @@ function TeamGridBlock({
   );
 }
 
+function TechnologiesGridBlock({
+  s,
+  groups,
+}: {
+  s: PageSectionRow;
+  groups: TechnologyGroupWithItems[] | undefined;
+}) {
+  const list = groups ?? [];
+  if (list.length === 0) return null;
+  return (
+    <Section>
+      <SectionHeading eyebrow={s.eyebrow ?? undefined} title={s.title ?? ""} intro={s.subtitle ?? undefined} />
+      <div className="mt-10 grid gap-6 md:grid-cols-2">
+        {list.map((g) => (
+          <div key={g.id} className="rounded-xl border border-border bg-card p-6">
+            <h3 className="text-base font-semibold">{g.name}</h3>
+            {g.body ? (
+              <p className="mt-1 text-sm text-muted-foreground">{g.body}</p>
+            ) : null}
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {g.items.map((t) => (
+                <li
+                  key={t.id}
+                  className="rounded-full border border-border bg-background px-2.5 py-0.5 text-xs"
+                >
+                  {t.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function FaqAccordionBlock({
+  s,
+  faqs,
+}: {
+  s: PageSectionRow;
+  faqs: FaqRow[] | undefined;
+}) {
+  const list = faqs ?? [];
+  if (list.length === 0) return null;
+  return (
+    <Section>
+      <SectionHeading eyebrow={s.eyebrow ?? undefined} title={s.title ?? ""} intro={s.subtitle ?? undefined} />
+      <div className="mt-10 space-y-3">
+        {list.map((f) => (
+          <details
+            key={f.id}
+            className="group rounded-xl border border-border bg-card p-5 open:border-primary/40"
+          >
+            <summary className="cursor-pointer list-none text-base font-semibold">
+              {f.question}
+            </summary>
+            <div className="mt-3 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+              {f.answer}
+            </div>
+          </details>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function ContactFormBlock({
+  s,
+  settings,
+}: {
+  s: PageSectionRow;
+  settings: SiteSettingsRow | null | undefined;
+}) {
+  const cfg = s.config as { show_form?: boolean };
+  const email = settings?.email;
+  const phone = settings?.phone;
+  return (
+    <Section>
+      <SectionHeading eyebrow={s.eyebrow ?? undefined} title={s.title ?? ""} intro={s.subtitle ?? undefined} />
+      <div className="mt-10 grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        {cfg.show_form === false ? null : (
+          <form
+            method="post"
+            action="/contact"
+            className="space-y-4 rounded-xl border border-border bg-card p-6"
+          >
+            <label className="block">
+              <span className="text-sm font-medium">Name</span>
+              <input
+                name="name"
+                required
+                className="mt-1 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium">Work email</span>
+              <input
+                type="email"
+                name="email"
+                required
+                className="mt-1 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium">Message</span>
+              <textarea
+                name="message"
+                required
+                rows={5}
+                className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              />
+            </label>
+            <button
+              type="submit"
+              className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+            >
+              Send message
+            </button>
+          </form>
+        )}
+        <aside className="rounded-xl border border-border bg-card p-6 text-sm">
+          <h3 className="mb-3 font-semibold">Direct contact</h3>
+          {email ? (
+            <p className="mb-2">
+              <a href={`mailto:${email}`} className="text-primary underline underline-offset-4">
+                {email}
+              </a>
+            </p>
+          ) : null}
+          {phone ? (
+            <p className="text-muted-foreground">{phone}</p>
+          ) : null}
+        </aside>
+      </div>
+    </Section>
+  );
+}
+
 // ---------- top-level switch ----------
 
 export function SectionRenderer({
@@ -550,6 +695,12 @@ export function SectionRenderer({
       return <MetricsBlock s={section} />;
     case "team_grid":
       return <TeamGridBlock s={section} members={data.members} />;
+    case "technologies_grid":
+      return <TechnologiesGridBlock s={section} groups={data.technologyGroups} />;
+    case "faq_accordion":
+      return <FaqAccordionBlock s={section} faqs={data.faqs} />;
+    case "contact_form":
+      return <ContactFormBlock s={section} settings={data.settings} />;
     default:
       return null;
   }

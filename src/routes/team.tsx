@@ -70,7 +70,8 @@ function Team() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="Team"
         title="A small, senior team"
@@ -203,7 +204,8 @@ function Team() {
         </Section>
       ) : null}
 
-      <CtaBand />
+      <CtaBand />        </>
+      )}
     </>
   );
 }

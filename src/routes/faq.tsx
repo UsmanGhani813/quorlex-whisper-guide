@@ -37,7 +37,8 @@ function Faq() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="FAQ"
         title="Frequently asked questions"
@@ -60,7 +61,8 @@ function Faq() {
         </div>
       </Section>
 
-      <CtaBand />
+      <CtaBand />        </>
+      )}
     </>
   );
 }

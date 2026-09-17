@@ -159,6 +159,37 @@ const KINDS: { value: string; label: string; hint: string; defaults: Partial<Sec
       config: { limit: 8, leadership_only: false },
     },
   },
+  {
+    value: "technologies_grid",
+    label: "Technologies grid",
+    hint: "Renders every technology group and its items from the DB.",
+    defaults: {
+      eyebrow: "Technologies",
+      title: "The stack we build on",
+      config: {},
+    },
+  },
+  {
+    value: "faq_accordion",
+    label: "FAQ accordion",
+    hint: "Renders every FAQ from the DB. Manage the items in Admin → FAQ.",
+    defaults: {
+      eyebrow: "FAQ",
+      title: "Frequently asked questions",
+      config: {},
+    },
+  },
+  {
+    value: "contact_form",
+    label: "Contact form",
+    hint: "config = { show_form: true|false } — shows the message form and direct contact.",
+    defaults: {
+      eyebrow: "Contact",
+      title: "Start a project",
+      subtitle: "Tell us what you want to build. We'll respond within one business day.",
+      config: { show_form: true },
+    },
+  },
 ];
 
 // No route loader: TanStack Start SSR would run it without a Supabase session,

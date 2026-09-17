@@ -122,7 +122,8 @@ function Contact() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="Contact"
         title="Tell us the business problem"
@@ -267,6 +268,8 @@ function Contact() {
           </div>
         </Container>
       </Section>
+        </>
+      )}
     </>
   );
 }

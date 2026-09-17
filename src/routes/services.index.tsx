@@ -46,7 +46,8 @@ function Services() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="Services"
         title="One partner across the full technology stack"
@@ -117,7 +118,8 @@ function Services() {
         </Section>
       ) : null}
 
-      <CtaBand />
+      <CtaBand />        </>
+      )}
     </>
   );
 }

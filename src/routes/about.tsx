@@ -43,7 +43,8 @@ function About() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="About"
         title="A technology partner, not a one-off vendor"
@@ -143,7 +144,8 @@ function About() {
         </Section>
       ) : null}
 
-      <CtaBand />
+      <CtaBand />        </>
+      )}
     </>
   );
 }

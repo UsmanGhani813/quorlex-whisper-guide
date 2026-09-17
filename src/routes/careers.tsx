@@ -68,7 +68,8 @@ function Careers() {
     <>
       {sections.length > 0 && sectionData ? (
         <SectionList sections={sections} data={sectionData} />
-      ) : null}
+      ) : (
+        <>
       <PageHeader
         eyebrow="Careers"
         title="Work on systems that matter"
@@ -147,7 +148,8 @@ function Careers() {
       <CtaBand
         title="Looking for a partner instead of a role?"
         body="If you have a system that needs building, start a conversation with us instead."
-      />
+      />        </>
+      )}
     </>
   );
 }
