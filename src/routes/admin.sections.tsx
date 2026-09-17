@@ -5,7 +5,7 @@
  * builds silently drop from the generated route tree.
  */
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
   ArrowDown,
   ArrowLeft,
@@ -19,7 +19,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 import { fetchAdminIdentity } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -214,20 +213,32 @@ const KINDS: {
   },
 ];
 
-const searchSchema = z.object({
-  page: z.string().optional(),
-});
-
 export const Route = createFileRoute("/admin/sections")({
   component: Sections,
   ssr: false,
-  validateSearch: searchSchema,
 });
 
+function useUrlPage(): string | null {
+  const [page, setPage] = useState<string | null>(null);
+
+  useEffect(() => {
+    function read() {
+      if (typeof window === "undefined") return;
+      const p = new URLSearchParams(window.location.search).get("page");
+      setPage(p);
+    }
+    read();
+    window.addEventListener("popstate", read);
+    return () => window.removeEventListener("popstate", read);
+  }, []);
+
+  return page;
+}
+
 function Sections() {
-  const search = useSearch({ from: "/admin/sections" });
   const [identity, setIdentity] = useState<Identity>(null);
   const navigate = useNavigate();
+  const urlPage = useUrlPage();
 
   useEffect(() => {
     (async () => {
@@ -244,8 +255,8 @@ function Sections() {
     return <div className="p-8 text-sm text-muted-foreground">Loading admin session…</div>;
   }
 
-  return search.page ? (
-    <SectionsEditor identity={identity} pageSlug={search.page} />
+  return urlPage ? (
+    <SectionsEditor identity={identity} pageSlug={urlPage} />
   ) : (
     <SectionsIndex identity={identity} />
   );

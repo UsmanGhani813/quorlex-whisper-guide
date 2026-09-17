@@ -24,9 +24,15 @@ export const Route = createFileRoute("/about")({
     links: [{ rel: "canonical", href: "/about" }],
   }),
   loader: async () => {
-    const __page = await fetchPageWithSections("about");
-    const bundle = await fetchAboutBundle();
-    return bundle;
+    const [page, bundle] = await Promise.all([
+      fetchPageWithSections("about"),
+      fetchAboutBundle(),
+    ]);
+    return {
+      ...bundle,
+      sections: page.sections,
+      sectionData: page.data as SectionData | null,
+    };
   },
   component: About,
 });
