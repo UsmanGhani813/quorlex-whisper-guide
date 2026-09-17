@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqRouteImport } from './routes/faq'
+import { Route as FounderRouteImport } from './routes/founder'
 import { Route as IndustriesRouteImport } from './routes/industries'
 import { Route as ProcessRouteImport } from './routes/process'
 import { Route as TeamRouteImport } from './routes/team'
@@ -25,12 +26,14 @@ import { Route as AdminChromeRouteImport } from './routes/admin.chrome'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin.enquiries'
 import { Route as AdminFaqRouteImport } from './routes/admin.faq'
 import { Route as AdminIndustriesRouteImport } from './routes/admin.industries'
+import { Route as AdminInsightsRouteImport } from './routes/admin.insights'
 import { Route as AdminJobsRouteImport } from './routes/admin.jobs'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminPagesRouteImport } from './routes/admin.pages'
 import { Route as AdminProcessRouteImport } from './routes/admin.process'
 import { Route as AdminProjectsRouteImport } from './routes/admin.projects'
+import { Route as AdminSectionsRouteImport } from './routes/admin.sections'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminTeamRouteImport } from './routes/admin.team'
@@ -45,6 +48,7 @@ import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 import { Route as AdminJobsIdRouteImport } from './routes/admin.jobs.$id'
 import { Route as AdminProjectsIdRouteImport } from './routes/admin.projects.$id'
+import { Route as AdminSectionsPageSlugRouteImport } from './routes/admin.sections.$pageSlug'
 import { Route as AdminServicesIdRouteImport } from './routes/admin.services.$id'
 import { Route as AdminTeamIdRouteImport } from './routes/admin.team.$id'
 
@@ -76,6 +80,11 @@ const ContactRoute = ContactRouteImport.update({
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FounderRoute = FounderRouteImport.update({
+  id: '/founder',
+  path: '/founder',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndustriesRoute = IndustriesRouteImport.update({
@@ -128,6 +137,11 @@ const AdminIndustriesRoute = AdminIndustriesRouteImport.update({
   path: '/industries',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminInsightsRoute = AdminInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminJobsRoute = AdminJobsRouteImport.update({
   id: '/jobs',
   path: '/jobs',
@@ -156,6 +170,11 @@ const AdminProcessRoute = AdminProcessRouteImport.update({
 const AdminProjectsRoute = AdminProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSectionsRoute = AdminSectionsRouteImport.update({
+  id: '/sections',
+  path: '/sections',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminServicesRoute = AdminServicesRouteImport.update({
@@ -228,6 +247,11 @@ const AdminProjectsIdRoute = AdminProjectsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminProjectsRoute,
 } as any)
+const AdminSectionsPageSlugRoute = AdminSectionsPageSlugRouteImport.update({
+  id: '/$pageSlug',
+  path: '/$pageSlug',
+  getParentRoute: () => AdminSectionsRoute,
+} as any)
 const AdminServicesIdRoute = AdminServicesIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -246,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/founder': typeof FounderRoute
   '/industries': typeof IndustriesRoute
   '/process': typeof ProcessRoute
   '/team': typeof TeamRoute
@@ -255,12 +280,14 @@ export interface FileRoutesByFullPath {
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/faq': typeof AdminFaqRoute
   '/admin/industries': typeof AdminIndustriesRoute
+  '/admin/insights': typeof AdminInsightsRoute
   '/admin/jobs': typeof AdminJobsRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/process': typeof AdminProcessRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/sections': typeof AdminSectionsRouteWithChildren
   '/admin/services': typeof AdminServicesRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/team': typeof AdminTeamRouteWithChildren
@@ -276,6 +303,7 @@ export interface FileRoutesByFullPath {
   '/services/': typeof ServicesIndexRoute
   '/admin/jobs/$id': typeof AdminJobsIdRoute
   '/admin/projects/$id': typeof AdminProjectsIdRoute
+  '/admin/sections/$pageSlug': typeof AdminSectionsPageSlugRoute
   '/admin/services/$id': typeof AdminServicesIdRoute
   '/admin/team/$id': typeof AdminTeamIdRoute
 }
@@ -285,6 +313,7 @@ export interface FileRoutesByTo {
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/founder': typeof FounderRoute
   '/industries': typeof IndustriesRoute
   '/process': typeof ProcessRoute
   '/team': typeof TeamRoute
@@ -294,12 +323,14 @@ export interface FileRoutesByTo {
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/faq': typeof AdminFaqRoute
   '/admin/industries': typeof AdminIndustriesRoute
+  '/admin/insights': typeof AdminInsightsRoute
   '/admin/jobs': typeof AdminJobsRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/process': typeof AdminProcessRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/sections': typeof AdminSectionsRouteWithChildren
   '/admin/services': typeof AdminServicesRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/team': typeof AdminTeamRouteWithChildren
@@ -315,6 +346,7 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesIndexRoute
   '/admin/jobs/$id': typeof AdminJobsIdRoute
   '/admin/projects/$id': typeof AdminProjectsIdRoute
+  '/admin/sections/$pageSlug': typeof AdminSectionsPageSlugRoute
   '/admin/services/$id': typeof AdminServicesIdRoute
   '/admin/team/$id': typeof AdminTeamIdRoute
 }
@@ -326,6 +358,7 @@ export interface FileRoutesById {
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/faq': typeof FaqRoute
+  '/founder': typeof FounderRoute
   '/industries': typeof IndustriesRoute
   '/process': typeof ProcessRoute
   '/team': typeof TeamRoute
@@ -335,12 +368,14 @@ export interface FileRoutesById {
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/faq': typeof AdminFaqRoute
   '/admin/industries': typeof AdminIndustriesRoute
+  '/admin/insights': typeof AdminInsightsRoute
   '/admin/jobs': typeof AdminJobsRouteWithChildren
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/pages': typeof AdminPagesRoute
   '/admin/process': typeof AdminProcessRoute
   '/admin/projects': typeof AdminProjectsRouteWithChildren
+  '/admin/sections': typeof AdminSectionsRouteWithChildren
   '/admin/services': typeof AdminServicesRouteWithChildren
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/team': typeof AdminTeamRouteWithChildren
@@ -356,6 +391,7 @@ export interface FileRoutesById {
   '/services/': typeof ServicesIndexRoute
   '/admin/jobs/$id': typeof AdminJobsIdRoute
   '/admin/projects/$id': typeof AdminProjectsIdRoute
+  '/admin/sections/$pageSlug': typeof AdminSectionsPageSlugRoute
   '/admin/services/$id': typeof AdminServicesIdRoute
   '/admin/team/$id': typeof AdminTeamIdRoute
 }
@@ -368,6 +404,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/faq'
+    | '/founder'
     | '/industries'
     | '/process'
     | '/team'
@@ -377,12 +414,14 @@ export interface FileRouteTypes {
     | '/admin/enquiries'
     | '/admin/faq'
     | '/admin/industries'
+    | '/admin/insights'
     | '/admin/jobs'
     | '/admin/login'
     | '/admin/media'
     | '/admin/pages'
     | '/admin/process'
     | '/admin/projects'
+    | '/admin/sections'
     | '/admin/services'
     | '/admin/settings'
     | '/admin/team'
@@ -398,6 +437,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/admin/jobs/$id'
     | '/admin/projects/$id'
+    | '/admin/sections/$pageSlug'
     | '/admin/services/$id'
     | '/admin/team/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -407,6 +447,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/faq'
+    | '/founder'
     | '/industries'
     | '/process'
     | '/team'
@@ -416,12 +457,14 @@ export interface FileRouteTypes {
     | '/admin/enquiries'
     | '/admin/faq'
     | '/admin/industries'
+    | '/admin/insights'
     | '/admin/jobs'
     | '/admin/login'
     | '/admin/media'
     | '/admin/pages'
     | '/admin/process'
     | '/admin/projects'
+    | '/admin/sections'
     | '/admin/services'
     | '/admin/settings'
     | '/admin/team'
@@ -437,6 +480,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/admin/jobs/$id'
     | '/admin/projects/$id'
+    | '/admin/sections/$pageSlug'
     | '/admin/services/$id'
     | '/admin/team/$id'
   id:
@@ -447,6 +491,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/faq'
+    | '/founder'
     | '/industries'
     | '/process'
     | '/team'
@@ -456,12 +501,14 @@ export interface FileRouteTypes {
     | '/admin/enquiries'
     | '/admin/faq'
     | '/admin/industries'
+    | '/admin/insights'
     | '/admin/jobs'
     | '/admin/login'
     | '/admin/media'
     | '/admin/pages'
     | '/admin/process'
     | '/admin/projects'
+    | '/admin/sections'
     | '/admin/services'
     | '/admin/settings'
     | '/admin/team'
@@ -477,6 +524,7 @@ export interface FileRouteTypes {
     | '/services/'
     | '/admin/jobs/$id'
     | '/admin/projects/$id'
+    | '/admin/sections/$pageSlug'
     | '/admin/services/$id'
     | '/admin/team/$id'
   fileRoutesById: FileRoutesById
@@ -488,6 +536,7 @@ export interface RootRouteChildren {
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
   FaqRoute: typeof FaqRoute
+  FounderRoute: typeof FounderRoute
   IndustriesRoute: typeof IndustriesRoute
   ProcessRoute: typeof ProcessRoute
   TeamRoute: typeof TeamRoute
@@ -544,6 +593,13 @@ declare module '@tanstack/react-router' {
       path: '/faq'
       fullPath: '/faq'
       preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/founder': {
+      id: '/founder'
+      path: '/founder'
+      fullPath: '/founder'
+      preLoaderRoute: typeof FounderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/industries': {
@@ -616,6 +672,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndustriesRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/insights': {
+      id: '/admin/insights'
+      path: '/insights'
+      fullPath: '/admin/insights'
+      preLoaderRoute: typeof AdminInsightsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/jobs': {
       id: '/admin/jobs'
       path: '/jobs'
@@ -656,6 +719,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/admin/projects'
       preLoaderRoute: typeof AdminProjectsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sections': {
+      id: '/admin/sections'
+      path: '/sections'
+      fullPath: '/admin/sections'
+      preLoaderRoute: typeof AdminSectionsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/services': {
@@ -756,6 +826,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProjectsIdRouteImport
       parentRoute: typeof AdminProjectsRoute
     }
+    '/admin/sections/$pageSlug': {
+      id: '/admin/sections/$pageSlug'
+      path: '/$pageSlug'
+      fullPath: '/admin/sections/$pageSlug'
+      preLoaderRoute: typeof AdminSectionsPageSlugRouteImport
+      parentRoute: typeof AdminSectionsRoute
+    }
     '/admin/services/$id': {
       id: '/admin/services/$id'
       path: '/$id'
@@ -797,6 +874,18 @@ const AdminProjectsRouteWithChildren = AdminProjectsRoute._addFileChildren(
   AdminProjectsRouteChildren,
 )
 
+interface AdminSectionsRouteChildren {
+  AdminSectionsPageSlugRoute: typeof AdminSectionsPageSlugRoute
+}
+
+const AdminSectionsRouteChildren: AdminSectionsRouteChildren = {
+  AdminSectionsPageSlugRoute: AdminSectionsPageSlugRoute,
+}
+
+const AdminSectionsRouteWithChildren = AdminSectionsRoute._addFileChildren(
+  AdminSectionsRouteChildren,
+)
+
 interface AdminServicesRouteChildren {
   AdminServicesIdRoute: typeof AdminServicesIdRoute
 }
@@ -827,12 +916,14 @@ interface AdminRouteChildren {
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
   AdminFaqRoute: typeof AdminFaqRoute
   AdminIndustriesRoute: typeof AdminIndustriesRoute
+  AdminInsightsRoute: typeof AdminInsightsRoute
   AdminJobsRoute: typeof AdminJobsRouteWithChildren
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMediaRoute: typeof AdminMediaRoute
   AdminPagesRoute: typeof AdminPagesRoute
   AdminProcessRoute: typeof AdminProcessRoute
   AdminProjectsRoute: typeof AdminProjectsRouteWithChildren
+  AdminSectionsRoute: typeof AdminSectionsRouteWithChildren
   AdminServicesRoute: typeof AdminServicesRouteWithChildren
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTeamRoute: typeof AdminTeamRouteWithChildren
@@ -846,12 +937,14 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEnquiriesRoute: AdminEnquiriesRoute,
   AdminFaqRoute: AdminFaqRoute,
   AdminIndustriesRoute: AdminIndustriesRoute,
+  AdminInsightsRoute: AdminInsightsRoute,
   AdminJobsRoute: AdminJobsRouteWithChildren,
   AdminLoginRoute: AdminLoginRoute,
   AdminMediaRoute: AdminMediaRoute,
   AdminPagesRoute: AdminPagesRoute,
   AdminProcessRoute: AdminProcessRoute,
   AdminProjectsRoute: AdminProjectsRouteWithChildren,
+  AdminSectionsRoute: AdminSectionsRouteWithChildren,
   AdminServicesRoute: AdminServicesRouteWithChildren,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminTeamRoute: AdminTeamRouteWithChildren,
@@ -868,6 +961,7 @@ const rootRouteChildren: RootRouteChildren = {
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
   FaqRoute: FaqRoute,
+  FounderRoute: FounderRoute,
   IndustriesRoute: IndustriesRoute,
   ProcessRoute: ProcessRoute,
   TeamRoute: TeamRoute,

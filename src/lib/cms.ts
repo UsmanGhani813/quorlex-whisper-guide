@@ -354,6 +354,80 @@ export async function fetchPageBySlug(slug: string): Promise<PageRow | null> {
   return data;
 }
 
+/* ---------- page sections (flexible section-builder) ---------- */
+
+export type PageSectionRow = {
+  id: string;
+  page_id: string;
+  kind: string;
+  position: number;
+  is_enabled: boolean;
+  title: string | null;
+  eyebrow: string | null;
+  subtitle: string | null;
+  config: Record<string, unknown>;
+  published_at: string | null;
+  archived_at: string | null;
+};
+
+export async function fetchPageSections(slug: string): Promise<PageSectionRow[]> {
+  const { data: page } = await supabase
+    .from("pages")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (!page) return [];
+  const { data } = await supabase
+    // @ts-expect-error page_sections not yet in generated types
+    .from("page_sections")
+    .select("*")
+    .eq("page_id", page.id)
+    .order("position");
+  return ((data ?? []) as PageSectionRow[]).filter(
+    (s) => s.is_enabled && s.archived_at == null && s.published_at != null,
+  );
+}
+
+export async function fetchTeamMemberByName(name: string): Promise<TeamMemberWithExpertise | null> {
+  const { data: member } = await supabase
+    .from("team_members")
+    .select("*")
+    .eq("name", name)
+    .maybeSingle();
+  if (!member) return null;
+  const [{ data: dept }, { data: expertise }] = await Promise.all([
+    member.department_id
+      ? supabase.from("team_departments").select("*").eq("id", member.department_id).maybeSingle()
+      : Promise.resolve({ data: null }),
+    supabase.from("team_member_expertise").select("*").eq("member_id", member.id).order("sort_order"),
+  ]);
+  return {
+    ...member,
+    department: dept ?? null,
+    expertise: (expertise ?? []).map((e) => e.body),
+  };
+}
+
+export type InsightsPost = {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  hero_image_url: string | null;
+  read_minutes: number | null;
+  tags: string[];
+  published_at: string | null;
+};
+
+export async function fetchInsights(): Promise<InsightsPost[]> {
+  const { data } = await supabase
+    // @ts-expect-error insights_posts not yet in generated types
+    .from("insights_posts")
+    .select("id, slug, title, excerpt, hero_image_url, read_minutes, tags, published_at")
+    .order("published_at", { ascending: false });
+  return (data ?? []) as InsightsPost[];
+}
+
 /* ---------- about page bundle (about + values + story + ideal client + markets) ---------- */
 
 export async function fetchAboutBundle() {

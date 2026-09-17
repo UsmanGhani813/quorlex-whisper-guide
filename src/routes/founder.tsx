@@ -12,27 +12,21 @@ import {
 } from "@/lib/cms";
 import { SectionList, type SectionData } from "@/components/site/section-renderer";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/founder")({
   head: () => ({
     meta: [
-      { title: "Quorlex Soft — AI-first software engineering studio" },
+      { title: "Aftab Hussain — Founder of Quorlex Soft" },
       {
         name: "description",
         content:
-          "A small AI-first software studio out of Pakistan building custom AI systems, web platforms and data pipelines for teams that need real engineering.",
-      },
-      { property: "og:title", content: "Quorlex Soft — AI-first software engineering studio" },
-      {
-        property: "og:description",
-        content:
-          "Research-backed AI engineering, delivery-first product work, and marketplace operations — from one senior team.",
+          "Founder profile of Quorlex Soft: academic background, ML research, publications and the engineering vision behind the studio.",
       },
     ],
   }),
   loader: async () => {
     const [sections, services, projects, processSteps, industries, team, founder, insights] =
       await Promise.all([
-        fetchPageSections("home"),
+        fetchPageSections("founder"),
         fetchServices(),
         fetchProjects(),
         fetchProcessSteps(),
@@ -52,10 +46,10 @@ export const Route = createFileRoute("/")({
     };
     return { sections, data };
   },
-  component: Home,
+  component: FounderPage,
 });
 
-function Home() {
+function FounderPage() {
   const { sections, data } = Route.useLoaderData();
   return <SectionList sections={sections} data={data} />;
 }

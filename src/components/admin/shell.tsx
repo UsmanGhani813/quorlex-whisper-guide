@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 const NAV: { label: string; to: string; icon: typeof LayoutDashboard }[] = [
   { label: "Dashboard", to: "/admin", icon: LayoutDashboard },
   { label: "Enquiries", to: "/admin/enquiries", icon: Inbox },
+  { label: "Page sections", to: "/admin/sections", icon: Layout },
   { label: "Services", to: "/admin/services", icon: Wrench },
   { label: "Industries", to: "/admin/industries", icon: Building2 },
   { label: "Portfolio", to: "/admin/projects", icon: Boxes },
@@ -36,6 +37,7 @@ const NAV: { label: string; to: string; icon: typeof LayoutDashboard }[] = [
   { label: "Process", to: "/admin/process", icon: Gauge },
   { label: "FAQ", to: "/admin/faq", icon: MessageSquare },
   { label: "Pages", to: "/admin/pages", icon: Newspaper },
+  { label: "Insights", to: "/admin/insights", icon: FileText },
   { label: "Jobs", to: "/admin/jobs", icon: FileText },
   { label: "Media", to: "/admin/media", icon: Image },
   { label: "Nav & footer", to: "/admin/chrome", icon: Layout },
