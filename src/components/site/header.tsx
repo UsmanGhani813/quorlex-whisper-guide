@@ -19,6 +19,9 @@ const FALLBACK_NAV = [
 export function Header({ chrome }: { chrome: SiteChrome }) {
   const [open, setOpen] = useState(false);
   const companyName = chrome.settings?.company_name ?? "Quorlex Soft";
+  // Optional string field on site_settings; may not be in the generated types yet.
+  const logoUrl =
+    (chrome.settings as { logo_url?: string } | null | undefined)?.logo_url ?? null;
   const items =
     chrome.navItems.length > 0
       ? chrome.navItems
@@ -32,9 +35,17 @@ export function Header({ chrome }: { chrome: SiteChrome }) {
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur">
       <Container className="flex h-16 items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <span className="grid h-8 w-8 place-items-center rounded-md bg-primary font-display text-sm font-bold text-primary-foreground">
-            Q
-          </span>
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={companyName}
+              className="h-8 w-8 rounded-md object-cover"
+            />
+          ) : (
+            <span className="grid h-8 w-8 place-items-center rounded-md bg-primary font-display text-sm font-bold text-primary-foreground">
+              Q
+            </span>
+          )}
           <span className="font-display text-base font-semibold tracking-tight">{companyName}</span>
         </Link>
 

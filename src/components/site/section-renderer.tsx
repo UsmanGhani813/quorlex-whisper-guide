@@ -224,20 +224,30 @@ function FounderSpotlightBlock({
     ? (featuredMember.publications as Array<{ title: string; venue: string; year?: number; doi?: string }>)
     : [];
   const cta = readCta(cfg.cta);
+  const photoUrl =
+    (featuredMember as { photo_url?: string | null }).photo_url ?? null;
   return (
     <Section>
       <SectionHeading eyebrow={s.eyebrow ?? undefined} title={s.title ?? ""} intro={s.subtitle ?? undefined} />
       <div className="mt-12 grid gap-10 md:grid-cols-[minmax(0,1fr)_2fr]">
         <div>
-          <div className="aspect-[4/5] w-full overflow-hidden rounded-xl border border-border bg-gradient-to-br from-primary/20 via-primary/5 to-transparent">
-            <div className="flex h-full w-full items-end p-6">
+          <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl border border-border bg-gradient-to-br from-primary/20 via-primary/5 to-transparent">
+            {photoUrl ? (
+              <img
+                src={photoUrl}
+                alt={featuredMember.name}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : null}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 flex items-end p-6 text-white">
               <div>
-                <div className="text-xs font-mono uppercase tracking-[0.2em] text-primary">
+                <div className="text-xs font-mono uppercase tracking-[0.2em] text-primary-foreground/90">
                   {featuredMember.title}
                 </div>
                 <div className="mt-1 text-2xl font-semibold">{featuredMember.name}</div>
                 {featuredMember.location ? (
-                  <div className="mt-1 text-xs text-muted-foreground">{featuredMember.location}</div>
+                  <div className="mt-1 text-xs text-white/80">{featuredMember.location}</div>
                 ) : null}
               </div>
             </div>

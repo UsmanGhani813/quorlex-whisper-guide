@@ -12,6 +12,29 @@ function initials(name: string) {
     .join("");
 }
 
+function MemberAvatar({
+  name,
+  photoUrl,
+}: {
+  name: string;
+  photoUrl?: string | null;
+}) {
+  if (photoUrl) {
+    return (
+      <img
+        src={photoUrl}
+        alt={name}
+        className="h-11 w-11 shrink-0 rounded-full border border-border object-cover"
+      />
+    );
+  }
+  return (
+    <div className="grid h-11 w-11 place-items-center rounded-full bg-primary/15 font-mono text-sm text-primary">
+      {initials(name)}
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/team")({
   head: () => ({
     meta: [
@@ -35,7 +58,7 @@ function Team() {
   const { members } = Route.useLoaderData();
   const leadership = members.filter((m) => m.is_leadership).sort((a, b) => a.sort_order - b.sort_order);
   const rest = members.filter((m) => !m.is_leadership).sort((a, b) => a.sort_order - b.sort_order);
-  const founder = members.find((m) => m.name === "Aftab Hussain");
+  const founder = members.find((m) => m.name === "Malik Aftab Hussain");
 
   return (
     <>
@@ -50,15 +73,23 @@ function Team() {
           <SectionHeading eyebrow="Founder" title="Meet the founder" />
           <div className="mt-10 grid gap-10 md:grid-cols-[minmax(0,1fr)_2fr]">
             <div>
-              <div className="aspect-[4/5] w-full overflow-hidden rounded-xl border border-border bg-gradient-to-br from-primary/25 via-primary/5 to-transparent">
-                <div className="flex h-full w-full items-end p-6">
+              <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl border border-border bg-gradient-to-br from-primary/25 via-primary/5 to-transparent">
+                {(founder as { photo_url?: string | null }).photo_url ? (
+                  <img
+                    src={(founder as { photo_url?: string }).photo_url}
+                    alt={founder.name}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 flex items-end p-6 text-white">
                   <div>
-                    <div className="font-mono text-xs uppercase tracking-[0.2em] text-primary">
+                    <div className="font-mono text-xs uppercase tracking-[0.2em] text-primary-foreground/90">
                       {founder.title}
                     </div>
                     <div className="mt-1 text-2xl font-semibold">{founder.name}</div>
                     {founder.location ? (
-                      <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                      <div className="mt-1 flex items-center gap-1 text-xs text-white/80">
                         <MapPin className="h-3 w-3" /> {founder.location}
                       </div>
                     ) : null}
@@ -103,13 +134,14 @@ function Team() {
           <SectionHeading eyebrow="Leadership" title="Working alongside the founder" />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {leadership
-              .filter((m) => m.name !== "Aftab Hussain")
+              .filter((m) => m.name !== "Malik Aftab Hussain")
               .map((member) => (
                 <article key={member.id} className="rounded-xl border border-border bg-card p-6">
                   <div className="flex items-center gap-3">
-                    <div className="grid h-11 w-11 place-items-center rounded-full bg-primary/15 font-mono text-sm text-primary">
-                      {initials(member.name)}
-                    </div>
+                    <MemberAvatar
+                      name={member.name}
+                      photoUrl={(member as { photo_url?: string | null }).photo_url}
+                    />
                     <div>
                       <h3 className="text-sm font-semibold">{member.name}</h3>
                       <p className="text-xs text-muted-foreground">{member.title}</p>
@@ -141,9 +173,10 @@ function Team() {
             {rest.map((member) => (
               <article key={member.id} className="rounded-xl border border-border bg-card p-6">
                 <div className="flex items-center gap-3">
-                  <div className="grid h-11 w-11 place-items-center rounded-full bg-primary/15 font-mono text-sm text-primary">
-                    {initials(member.name)}
-                  </div>
+                  <MemberAvatar
+                    name={member.name}
+                    photoUrl={(member as { photo_url?: string | null }).photo_url}
+                  />
                   <div>
                     <h3 className="text-sm font-semibold">{member.name}</h3>
                     <p className="text-xs text-muted-foreground">{member.title}</p>
