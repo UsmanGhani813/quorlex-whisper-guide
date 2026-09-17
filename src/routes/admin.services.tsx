@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { Check, Circle, Plus } from "lucide-react";
+import { Check, Circle, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { fetchAdminIdentity, canWrite } from "@/lib/auth";
+import { fetchAdminIdentity, canWrite, isSuperAdmin } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminPageHeader, AdminShell } from "@/components/admin/shell";
 
@@ -23,6 +23,7 @@ function AdminServices() {
   const { identity, services } = Route.useLoaderData();
   const router = useRouter();
   const writable = canWrite(identity.role);
+  const canDelete = isSuperAdmin(identity.role);
 
   async function togglePublish(id: string, currentlyPublished: boolean) {
     const { error } = await supabase
@@ -31,6 +32,14 @@ function AdminServices() {
       .eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(currentlyPublished ? "Unpublished" : "Published");
+    router.invalidate();
+  }
+
+  async function deleteService(id: string, name: string) {
+    if (!confirm(`Delete "${name}" permanently? This cannot be undone.`)) return;
+    const { error } = await supabase.from("services").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Deleted");
     router.invalidate();
   }
 
@@ -109,15 +118,36 @@ function AdminServices() {
                   </td>
                   <td className="p-3 text-xs text-muted-foreground">{s.sort_order}</td>
                   <td className="p-3">
-                    {writable ? (
-                      <button
-                        onClick={() => togglePublish(s.id, live)}
-                        disabled={!!s.archived_at}
-                        className="rounded-md border border-border px-3 py-1 text-xs hover:border-primary/40 disabled:opacity-40"
-                      >
-                        {live ? "Unpublish" : "Publish"}
-                      </button>
-                    ) : null}
+                    <div className="flex flex-wrap items-center justify-end gap-1.5">
+                      {writable ? (
+                        <>
+                          <Link
+                            to="/admin/services/$id"
+                            params={{ id: s.id }}
+                            className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs hover:border-primary/40"
+                            title="Edit"
+                          >
+                            <Pencil className="h-3 w-3" /> Edit
+                          </Link>
+                          <button
+                            onClick={() => togglePublish(s.id, live)}
+                            disabled={!!s.archived_at}
+                            className="rounded-md border border-border px-2.5 py-1 text-xs hover:border-primary/40 disabled:opacity-40"
+                          >
+                            {live ? "Unpublish" : "Publish"}
+                          </button>
+                        </>
+                      ) : null}
+                      {canDelete ? (
+                        <button
+                          onClick={() => deleteService(s.id, s.name)}
+                          className="inline-flex items-center gap-1 rounded-md border border-destructive/50 px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10"
+                          title="Delete permanently"
+                        >
+                          <Trash2 className="h-3 w-3" /> Delete
+                        </button>
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               );

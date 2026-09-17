@@ -1,8 +1,8 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { AlertTriangle, Plus } from "lucide-react";
+import { AlertTriangle, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { fetchAdminIdentity, canWrite } from "@/lib/auth";
+import { fetchAdminIdentity, canWrite, isSuperAdmin } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { AdminPageHeader, AdminShell } from "@/components/admin/shell";
 
@@ -31,6 +31,14 @@ function AdminTeam() {
       .eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(currentlyPublished ? "Unpublished" : "Published");
+    router.invalidate();
+  }
+
+  async function deleteMember(id: string, name: string) {
+    if (!confirm(`Delete "${name}" permanently? This cannot be undone.`)) return;
+    const { error } = await supabase.from("team_members").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Deleted");
     router.invalidate();
   }
 
@@ -119,14 +127,33 @@ function AdminTeam() {
                             </span>
                           </td>
                           <td className="p-3">
-                            {writable ? (
-                              <button
-                                onClick={() => togglePublish(m.id, live)}
-                                className="rounded-md border border-border px-3 py-1 text-xs hover:border-primary/40"
-                              >
-                                {live ? "Unpublish" : "Publish"}
-                              </button>
-                            ) : null}
+                            <div className="flex flex-wrap items-center justify-end gap-1.5">
+                              {writable ? (
+                                <>
+                                  <Link
+                                    to="/admin/team/$id"
+                                    params={{ id: m.id }}
+                                    className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-1 text-xs hover:border-primary/40"
+                                  >
+                                    <Pencil className="h-3 w-3" /> Edit
+                                  </Link>
+                                  <button
+                                    onClick={() => togglePublish(m.id, live)}
+                                    className="rounded-md border border-border px-2.5 py-1 text-xs hover:border-primary/40"
+                                  >
+                                    {live ? "Unpublish" : "Publish"}
+                                  </button>
+                                </>
+                              ) : null}
+                              {isSuperAdmin(identity.role) ? (
+                                <button
+                                  onClick={() => deleteMember(m.id, m.name)}
+                                  className="inline-flex items-center gap-1 rounded-md border border-destructive/50 px-2.5 py-1 text-xs text-destructive hover:bg-destructive/10"
+                                >
+                                  <Trash2 className="h-3 w-3" /> Delete
+                                </button>
+                              ) : null}
+                            </div>
                           </td>
                         </tr>
                       );

@@ -1,5 +1,5 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { AlertTriangle } from "lucide-react";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { AlertTriangle, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { fetchAdminIdentity, canWrite, isSuperAdmin } from "@/lib/auth";
@@ -49,6 +49,18 @@ function AdminProjects() {
       <AdminPageHeader
         title="Portfolio"
         intro={`${projects.length} projects${demoCount ? ` · ${demoCount} demo` : ""}`}
+        actions={
+          writable ? (
+            <Link
+              to="/admin/projects/$id"
+              params={{ id: "new" }}
+              className="inline-flex items-center gap-1 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"
+            >
+              <Plus className="h-4 w-4" />
+              New project
+            </Link>
+          ) : null
+        }
       />
 
       {demoCount > 0 ? (
@@ -69,7 +81,13 @@ function AdminProjects() {
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-medium">{p.name}</h3>
+                    <Link
+                      to="/admin/projects/$id"
+                      params={{ id: p.id }}
+                      className="font-medium hover:text-primary"
+                    >
+                      {p.name}
+                    </Link>
                     <span className="font-mono text-xs text-muted-foreground">/{p.slug}</span>
                     {p.is_demo ? (
                       <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-medium text-primary">
@@ -99,7 +117,14 @@ function AdminProjects() {
                   ) : null}
                 </div>
                 {writable ? (
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    <Link
+                      to="/admin/projects/$id"
+                      params={{ id: p.id }}
+                      className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary/40"
+                    >
+                      <Pencil className="h-3 w-3" /> Edit
+                    </Link>
                     <button
                       onClick={() => toggleFeatured(p.id, p.is_featured)}
                       className="rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary/40"
@@ -115,9 +140,9 @@ function AdminProjects() {
                     {isSuperAdmin(identity.role) ? (
                       <button
                         onClick={() => del(p.id)}
-                        className="rounded-md border border-destructive/60 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10"
+                        className="inline-flex items-center gap-1 rounded-md border border-destructive/60 px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10"
                       >
-                        Delete
+                        <Trash2 className="h-3 w-3" /> Delete
                       </button>
                     ) : null}
                   </div>
@@ -129,9 +154,8 @@ function AdminProjects() {
       </div>
 
       <p className="mt-6 text-xs text-muted-foreground">
-        Detailed project edit (bullets, obstacles, metrics, gallery) will land in a follow-up
-        session. For now, publish / feature / archive controls are here; full narrative editing runs
-        via the SQL editor or directly in the projects table until then.
+        Click a project's name to open the full case-study editor: narrative, bullet points,
+        obstacles, metrics, and links to services and technologies.
       </p>
     </AdminShell>
   );

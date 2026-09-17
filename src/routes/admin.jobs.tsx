@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { fetchAdminIdentity, canWrite, isSuperAdmin } from "@/lib/auth";
@@ -96,7 +96,14 @@ function AdminJobs() {
                     </p>
                   </div>
                   {writable ? (
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
+                      <Link
+                        to="/admin/jobs/$id"
+                        params={{ id: j.id }}
+                        className="inline-flex items-center gap-1 rounded-md border border-border px-3 py-1.5 text-xs hover:border-primary/40"
+                      >
+                        <Pencil className="h-3 w-3" /> Edit
+                      </Link>
                       <button
                         onClick={() => togglePublish(j.id, live)}
                         className="rounded-md border border-border px-3 py-1.5 text-xs"
@@ -106,9 +113,9 @@ function AdminJobs() {
                       {isSuperAdmin(identity.role) ? (
                         <button
                           onClick={() => del(j.id)}
-                          className="rounded-md border border-destructive/60 px-3 py-1.5 text-xs text-destructive"
+                          className="inline-flex items-center gap-1 rounded-md border border-destructive/60 px-3 py-1.5 text-xs text-destructive"
                         >
-                          Delete
+                          <Trash2 className="h-3 w-3" /> Delete
                         </button>
                       ) : null}
                     </div>
