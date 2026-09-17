@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { fetchAboutBundle } from "@/lib/cms";
+import { fetchAboutBundle, fetchPageWithSections } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { CtaBand, PageHeader, Section, SectionHeading } from "@/components/site/sections";
 
 export const Route = createFileRoute("/about")({
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/about")({
     links: [{ rel: "canonical", href: "/about" }],
   }),
   loader: async () => {
+    const __page = await fetchPageWithSections("about");
     const bundle = await fetchAboutBundle();
     return bundle;
   },
@@ -30,7 +32,7 @@ export const Route = createFileRoute("/about")({
 });
 
 function About() {
-  const { settings, values, story, idealClient } = Route.useLoaderData();
+  const { settings, values, story, idealClient, sections, sectionData } = Route.useLoaderData();
   const why = story.filter((s) => s.kind === "why");
   const founder = story.filter((s) => s.kind === "founder");
   const vision = story.filter((s) => s.kind === "vision");
@@ -39,6 +41,9 @@ function About() {
 
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="About"
         title="A technology partner, not a one-off vendor"

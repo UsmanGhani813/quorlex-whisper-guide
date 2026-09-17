@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, MapPin, Quote } from "lucide-react";
 
-import { fetchTeam } from "@/lib/cms";
+import { fetchPageWithSections, fetchTeam } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { CtaBand, PageHeader, Section, SectionHeading } from "@/components/site/sections";
 
 function initials(name: string) {
@@ -48,20 +49,28 @@ export const Route = createFileRoute("/team")({
     links: [{ rel: "canonical", href: "/team" }],
   }),
   loader: async () => {
-    const { departments, members } = await fetchTeam();
-    return { departments, members: members.filter((m) => !m.is_demo) };
+    const [team, page] = await Promise.all([fetchTeam(), fetchPageWithSections("team")]);
+    return {
+      departments: team.departments,
+      members: team.members.filter((m) => !m.is_demo),
+      sections: page.sections,
+      sectionData: page.data as SectionData | null,
+    };
   },
   component: Team,
 });
 
 function Team() {
-  const { members } = Route.useLoaderData();
+  const { members, sections, sectionData } = Route.useLoaderData();
   const leadership = members.filter((m) => m.is_leadership).sort((a, b) => a.sort_order - b.sort_order);
   const rest = members.filter((m) => !m.is_leadership).sort((a, b) => a.sort_order - b.sort_order);
   const founder = members.find((m) => m.name === "Malik Aftab Hussain");
 
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="Team"
         title="A small, senior team"

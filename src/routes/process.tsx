@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { fetchProcessSteps } from "@/lib/cms";
+import { fetchPageWithSections, fetchProcessSteps } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { CtaBand, PageHeader, Section } from "@/components/site/sections";
 
 export const Route = createFileRoute("/process")({
@@ -22,17 +23,21 @@ export const Route = createFileRoute("/process")({
     links: [{ rel: "canonical", href: "/process" }],
   }),
   loader: async () => {
+    const __page = await fetchPageWithSections("process");
     const steps = await fetchProcessSteps();
-    return { steps };
+    return { steps , sections: __page.sections, sectionData: __page.data as SectionData | null };
   },
   component: Process,
 });
 
 function Process() {
-  const { steps } = Route.useLoaderData();
+  const { steps, sections, sectionData } = Route.useLoaderData();
 
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="Process"
         title="From business problem to supported system"

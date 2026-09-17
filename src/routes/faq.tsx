@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { fetchFaqs } from "@/lib/cms";
+import { fetchFaqs, fetchPageWithSections } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { CtaBand, PageHeader, Section } from "@/components/site/sections";
 
 export const Route = createFileRoute("/faq")({
@@ -22,17 +23,21 @@ export const Route = createFileRoute("/faq")({
     links: [{ rel: "canonical", href: "/faq" }],
   }),
   loader: async () => {
+    const __page = await fetchPageWithSections("faq");
     const faqs = await fetchFaqs();
-    return { faqs };
+    return { faqs , sections: __page.sections, sectionData: __page.data as SectionData | null };
   },
   component: Faq,
 });
 
 function Faq() {
-  const { faqs } = Route.useLoaderData();
+  const { faqs, sections, sectionData } = Route.useLoaderData();
 
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="FAQ"
         title="Frequently asked questions"

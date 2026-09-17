@@ -2,7 +2,8 @@ import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
-import { fetchProjects } from "@/lib/cms";
+import { fetchPageWithSections, fetchProjects } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { CtaBand, DemoNotice, PageHeader, Section } from "@/components/site/sections";
 import { cn } from "@/lib/utils";
 
@@ -26,14 +27,21 @@ export const Route = createFileRoute("/portfolio/")({
     links: [{ rel: "canonical", href: "/portfolio" }],
   }),
   loader: async () => {
-    const projects = await fetchProjects();
-    return { projects };
+    const [projects, page] = await Promise.all([
+      fetchProjects(),
+      fetchPageWithSections("portfolio"),
+    ]);
+    return {
+      projects,
+      sections: page.sections,
+      sectionData: page.data as SectionData | null,
+    };
   },
   component: Portfolio,
 });
 
 function Portfolio() {
-  const { projects } = Route.useLoaderData();
+  const { projects, sections, sectionData } = Route.useLoaderData();
   const [service, setService] = useState("All");
   const [industry, setIndustry] = useState("All");
 
@@ -62,6 +70,9 @@ function Portfolio() {
 
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="Work"
         title="Demonstration case studies"

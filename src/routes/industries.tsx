@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { fetchIndustries } from "@/lib/cms";
+import { fetchIndustries, fetchPageWithSections } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { CtaBand, PageHeader, Section } from "@/components/site/sections";
 
 export const Route = createFileRoute("/industries")({
@@ -22,17 +23,27 @@ export const Route = createFileRoute("/industries")({
     links: [{ rel: "canonical", href: "/industries" }],
   }),
   loader: async () => {
-    const industries = await fetchIndustries();
-    return { industries };
+    const [industries, page] = await Promise.all([
+      fetchIndustries(),
+      fetchPageWithSections("industries"),
+    ]);
+    return {
+      industries,
+      sections: page.sections,
+      sectionData: page.data as SectionData | null,
+    };
   },
   component: Industries,
 });
 
 function Industries() {
-  const { industries } = Route.useLoaderData();
+  const { industries, sections, sectionData } = Route.useLoaderData();
 
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="Industries"
         title="Sectors we build technology for"

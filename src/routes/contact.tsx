@@ -4,7 +4,8 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { fetchServices } from "@/lib/cms";
+import { fetchPageWithSections, fetchServices } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { supabase } from "@/integrations/supabase/client";
 import { Container, PageHeader, Section } from "@/components/site/sections";
 
@@ -27,11 +28,12 @@ export const Route = createFileRoute("/contact")({
     links: [{ rel: "canonical", href: "/contact" }],
   }),
   loader: async () => {
+    const __page = await fetchPageWithSections("contact");
     const [services, { data: settings }] = await Promise.all([
       fetchServices(),
       supabase.from("site_settings").select("*").maybeSingle(),
     ]);
-    return { services, settings: settings ?? null };
+    return { services, settings: settings ?? null , sections: __page.sections, sectionData: __page.data as SectionData | null };
   },
   component: Contact,
 });
@@ -60,7 +62,7 @@ const enquirySchema = z.object({
 });
 
 function Contact() {
-  const { services, settings } = Route.useLoaderData();
+  const { services, settings, sections, sectionData } = Route.useLoaderData();
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
@@ -118,6 +120,9 @@ function Contact() {
 
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="Contact"
         title="Tell us the business problem"

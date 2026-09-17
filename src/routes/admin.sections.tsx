@@ -46,7 +46,7 @@ function SectionsIndex() {
           supabase
             .from("pages")
             .select("id, slug, title, kind, published_at, archived_at")
-            .eq("kind", "landing")
+            .in("kind", ["landing", "marketing"])
             .order("slug"),
           // @ts-expect-error not yet in generated types
           supabase.from("page_sections").select("page_id"),
@@ -85,16 +85,13 @@ function SectionsIndex() {
       />
 
       <div className="mb-6 rounded-lg border border-border bg-card p-4 text-sm">
-        <p className="font-medium">Which pages appear here?</p>
+        <p className="font-medium">How this works</p>
         <p className="mt-1 text-muted-foreground">
-          Only <span className="font-mono">landing</span> pages (currently{" "}
-          <span className="font-mono">/</span>, <span className="font-mono">/founder</span> and{" "}
-          <span className="font-mono">/insights</span>). Marketing and legal pages like{" "}
-          <span className="font-mono">/about</span>, <span className="font-mono">/faq</span>,{" "}
-          <span className="font-mono">/privacy</span>, <span className="font-mono">/terms</span>{" "}
-          have their own body-text editor —{" "}
+          Every public page is listed below. Add section blocks (hero, services, industries,
+          founder spotlight, CTAs, etc.) and they render at the top of that page. Legal pages
+          (privacy, terms, cookies, imprint) live in{" "}
           <Link to="/admin/pages" className="text-primary underline underline-offset-4">
-            edit them in Admin → Pages
+            Admin → Pages
           </Link>
           .
         </p>

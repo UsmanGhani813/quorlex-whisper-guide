@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { supabase } from "@/integrations/supabase/client";
-import { fetchJobs } from "@/lib/cms";
+import { fetchJobs, fetchPageWithSections } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { CtaBand, PageHeader, Section, SectionHeading } from "@/components/site/sections";
 
 export const Route = createFileRoute("/careers")({
@@ -23,11 +24,12 @@ export const Route = createFileRoute("/careers")({
     links: [{ rel: "canonical", href: "/careers" }],
   }),
   loader: async () => {
+    const __page = await fetchPageWithSections("careers");
     const [jobs, { data: settings }] = await Promise.all([
       fetchJobs(),
       supabase.from("site_settings").select("email").maybeSingle(),
     ]);
-    return { jobs, email: settings?.email ?? "hello@example.com" };
+    return { jobs, email: settings?.email ?? "hello@example.com" , sections: __page.sections, sectionData: __page.data as SectionData | null };
   },
   component: Careers,
 });
@@ -60,10 +62,13 @@ const disciplines = [
 ];
 
 function Careers() {
-  const { jobs, email } = Route.useLoaderData();
+  const { jobs, email, sections, sectionData } = Route.useLoaderData();
 
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="Careers"
         title="Work on systems that matter"

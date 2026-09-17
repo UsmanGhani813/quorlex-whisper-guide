@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
-import { fetchServices } from "@/lib/cms";
+import { fetchPageWithSections, fetchServices } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { CtaBand, PageHeader, Section, SectionHeading } from "@/components/site/sections";
 
-export const Route = createFileRoute("/services/")({
+export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
       { title: "Services — Quorlex Soft" },
@@ -23,21 +24,29 @@ export const Route = createFileRoute("/services/")({
     links: [{ rel: "canonical", href: "/services" }],
   }),
   loader: async () => {
-    const services = await fetchServices();
+    const [services, page] = await Promise.all([
+      fetchServices(),
+      fetchPageWithSections("services"),
+    ]);
     return {
       services,
       coreServices: services.filter((s) => s.is_core),
       otherServices: services.filter((s) => !s.is_core),
+      sections: page.sections,
+      sectionData: page.data as SectionData | null,
     };
   },
   component: Services,
 });
 
 function Services() {
-  const { coreServices, otherServices } = Route.useLoaderData();
+  const { coreServices, otherServices, sections, sectionData } = Route.useLoaderData();
 
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="Services"
         title="One partner across the full technology stack"

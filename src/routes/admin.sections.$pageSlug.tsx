@@ -357,48 +357,6 @@ function SectionsEditor() {
     );
   }
 
-  if (page.kind !== "landing") {
-    return (
-      <AdminShell identity={identity}>
-        <AdminPageHeader
-          title={`Sections · ${page.title}`}
-          intro="This page isn't built from section blocks."
-          actions={
-            <Link
-              to="/admin/sections"
-              className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs text-muted-foreground hover:bg-secondary"
-            >
-              <ArrowLeft className="h-3.5 w-3.5" /> All pages
-            </Link>
-          }
-        />
-        <div className="rounded-xl border border-border bg-card p-6 text-sm leading-relaxed">
-          <p>
-            <span className="font-semibold">/{page.slug}</span> is a{" "}
-            <span className="font-mono">{page.kind}</span> page. Its content is stored as a single
-            body (title, intro, body, effective date) — not as reorderable section blocks.
-          </p>
-          <p className="mt-3">
-            Edit it in{" "}
-            <Link
-              to="/admin/pages"
-              className="text-primary underline underline-offset-4"
-            >
-              Admin → Pages
-            </Link>
-            .
-          </p>
-          <p className="mt-3 text-muted-foreground">
-            The section builder is designed for landing pages (currently{" "}
-            <span className="font-mono">/</span>, <span className="font-mono">/founder</span>,{" "}
-            <span className="font-mono">/insights</span>). Ask us to add another landing page and
-            we'll open it up to sections too.
-          </p>
-        </div>
-      </AdminShell>
-    );
-  }
-
   return (
     <AdminShell identity={identity}>
       <AdminPageHeader

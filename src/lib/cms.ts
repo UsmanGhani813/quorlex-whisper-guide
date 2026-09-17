@@ -419,6 +419,38 @@ export type InsightsPost = {
   published_at: string | null;
 };
 
+/**
+ * Fetch page_sections for a slug PLUS all shared data the section renderer
+ * needs. Returns null-data if the page has no sections, so callers can cheaply
+ * decide whether to render anything.
+ */
+export async function fetchPageWithSections(slug: string) {
+  const sections = await fetchPageSections(slug);
+  if (sections.length === 0) return { sections: [], data: null as unknown };
+  const [services, industries, projects, processSteps, team, founder, insights] =
+    await Promise.all([
+      fetchServices(),
+      fetchIndustries(),
+      fetchProjects(),
+      fetchProcessSteps(),
+      fetchTeam(),
+      fetchTeamMemberByName("Malik Aftab Hussain"),
+      fetchInsights(),
+    ]);
+  return {
+    sections,
+    data: {
+      services,
+      industries,
+      projects,
+      processSteps,
+      featuredMember: founder,
+      members: team.members.filter((m) => !m.is_demo),
+      insightsCount: insights.length,
+    },
+  };
+}
+
 export async function fetchInsights(): Promise<InsightsPost[]> {
   const { data } = await supabase
     // @ts-expect-error insights_posts not yet in generated types

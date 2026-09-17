@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 
-import { fetchTechnologyGroups } from "@/lib/cms";
+import { fetchPageWithSections, fetchTechnologyGroups } from "@/lib/cms";
+import { SectionList, type SectionData } from "@/components/site/section-renderer";
 import { CtaBand, PageHeader, Section, SectionHeading } from "@/components/site/sections";
 
 const securityPractices = [
@@ -30,16 +31,20 @@ export const Route = createFileRoute("/technologies")({
     links: [{ rel: "canonical", href: "/technologies" }],
   }),
   loader: async () => {
+    const __page = await fetchPageWithSections("technologies");
     const technologies = await fetchTechnologyGroups();
-    return { technologies };
+    return { technologies , sections: __page.sections, sectionData: __page.data as SectionData | null };
   },
   component: Technologies,
 });
 
 function Technologies() {
-  const { technologies } = Route.useLoaderData();
+  const { technologies, sections, sectionData } = Route.useLoaderData();
   return (
     <>
+      {sections.length > 0 && sectionData ? (
+        <SectionList sections={sections} data={sectionData} />
+      ) : null}
       <PageHeader
         eyebrow="Technologies"
         title="Tools chosen for fit and longevity"
