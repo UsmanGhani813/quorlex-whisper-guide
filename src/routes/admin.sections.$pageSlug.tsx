@@ -161,23 +161,26 @@ const KINDS: { value: string; label: string; hint: string; defaults: Partial<Sec
   },
 ];
 
+// No route loader: TanStack Start SSR would run it without a Supabase session,
+// which would put the route into an error state that renders blank in production.
+// The parent /admin route already gates auth in beforeLoad, so by the time this
+// component mounts on the client the visitor is guaranteed authenticated.
 export const Route = createFileRoute("/admin/sections/$pageSlug")({
-  loader: async () => {
-    const identity = await fetchAdminIdentity();
-    if (!identity) throw new Error("Not authenticated");
-    return { identity };
-  },
   component: SectionsEditor,
+  ssr: false,
 });
+
+type Identity = Awaited<ReturnType<typeof fetchAdminIdentity>>;
 
 function SectionsEditor() {
   const { pageSlug } = Route.useParams();
-  const { identity } = Route.useLoaderData();
   const navigate = useNavigate();
 
+  const [identity, setIdentity] = useState<Identity>(null);
   const [page, setPage] = useState<PageRow | null>(null);
   const [sections, setSections] = useState<SectionRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedKind, setSelectedKind] = useState(KINDS[0].value);
 
   async function reload(pageId: string) {
@@ -191,21 +194,42 @@ function SectionsEditor() {
   }
 
   useEffect(() => {
+    let cancelled = false;
     (async () => {
-      const { data: pageData } = await supabase
-        .from("pages")
-        .select("id, slug, title, kind")
-        .eq("slug", pageSlug)
-        .maybeSingle();
-      if (!pageData) {
-        toast.error("Page not found");
-        navigate({ to: "/admin/sections" });
-        return;
+      try {
+        const id = await fetchAdminIdentity();
+        if (cancelled) return;
+        if (!id) {
+          navigate({ to: "/admin/login" });
+          return;
+        }
+        setIdentity(id);
+
+        const { data: pageData, error: pageErr } = await supabase
+          .from("pages")
+          .select("id, slug, title, kind")
+          .eq("slug", pageSlug)
+          .maybeSingle();
+        if (cancelled) return;
+        if (pageErr) throw pageErr;
+        if (!pageData) {
+          setLoadError(`Page "${pageSlug}" does not exist.`);
+          setLoading(false);
+          return;
+        }
+        setPage(pageData as PageRow);
+        await reload(pageData.id);
+        setLoading(false);
+      } catch (err) {
+        if (!cancelled) {
+          setLoadError(err instanceof Error ? err.message : String(err));
+          setLoading(false);
+        }
       }
-      setPage(pageData as PageRow);
-      await reload(pageData.id);
-      setLoading(false);
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [pageSlug, navigate]);
 
   async function addSection() {
@@ -292,12 +316,46 @@ function SectionsEditor() {
 
   const kindMap = useMemo(() => Object.fromEntries(KINDS.map((k) => [k.value, k.label])), []);
 
-  if (loading || !page)
+  // Loading — before we even know who the user is, render a shell-less loader.
+  if (!identity) {
+    return (
+      <div className="p-8 text-sm text-muted-foreground">Loading admin session…</div>
+    );
+  }
+
+  if (loading) {
     return (
       <AdminShell identity={identity}>
-        <p className="text-sm text-muted-foreground">Loading…</p>
+        <AdminPageHeader title="Loading section editor…" />
+        <p className="text-sm text-muted-foreground">Fetching page and sections…</p>
       </AdminShell>
     );
+  }
+
+  if (loadError || !page) {
+    return (
+      <AdminShell identity={identity}>
+        <AdminPageHeader
+          title={`Sections · ${pageSlug}`}
+          intro="Couldn't load this page."
+          actions={
+            <Link
+              to="/admin/sections"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs text-muted-foreground hover:bg-secondary"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> All pages
+            </Link>
+          }
+        />
+        <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-sm">
+          <p className="font-semibold text-destructive">Load error</p>
+          <p className="mt-1 text-muted-foreground">
+            {loadError ?? "Page not found in the database."}
+          </p>
+        </div>
+      </AdminShell>
+    );
+  }
 
   if (page.kind !== "landing") {
     return (

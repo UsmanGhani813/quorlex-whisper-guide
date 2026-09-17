@@ -19,16 +19,14 @@ type PostRow = {
 };
 
 export const Route = createFileRoute("/admin/insights")({
-  loader: async () => {
-    const identity = await fetchAdminIdentity();
-    if (!identity) throw new Error("Not authenticated");
-    return { identity };
-  },
   component: InsightsAdmin,
+  ssr: false,
 });
 
+type Identity = Awaited<ReturnType<typeof fetchAdminIdentity>>;
+
 function InsightsAdmin() {
-  const { identity } = Route.useLoaderData();
+  const [identity, setIdentity] = useState<Identity>(null);
   const [posts, setPosts] = useState<PostRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [newSlug, setNewSlug] = useState("");
@@ -45,8 +43,17 @@ function InsightsAdmin() {
   }
 
   useEffect(() => {
-    reload();
+    (async () => {
+      const id = await fetchAdminIdentity();
+      if (!id) return;
+      setIdentity(id);
+      await reload();
+    })();
   }, []);
+
+  if (!identity) {
+    return <div className="p-8 text-sm text-muted-foreground">Loading admin session…</div>;
+  }
 
   async function create() {
     if (!newSlug || !newTitle) return toast.error("Slug and title required");
