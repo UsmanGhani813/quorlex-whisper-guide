@@ -1,35 +1,13 @@
-import { defineConfig, loadEnv } from "vite";
-import react from "@vitejs/plugin-react";
-import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import tsConfigPaths from "vite-tsconfig-paths";
-import tailwindcss from "@tailwindcss/vite";
+// Uses @lovable.dev/vite-tanstack-config as a build-time helper that bundles
+// TanStack Start + Nitro + Tailwind + tsconfigPaths + React and produces a
+// Vercel-compatible output when NITRO_PRESET=vercel is set. It is a devDependency
+// that runs only on the build server and does not ship any code, branding, or
+// telemetry to the browser.
+import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig(({ mode }) => {
-  // Expose VITE_* env vars to the client + server bundles.
-  const env = loadEnv(mode, process.cwd(), "");
-  const define: Record<string, string> = {};
-  for (const key of Object.keys(env)) {
-    if (key.startsWith("VITE_")) {
-      define[`import.meta.env.${key}`] = JSON.stringify(env[key]);
-    }
-  }
-
-  return {
-    define,
-    resolve: {
-      dedupe: ["react", "react-dom", "@tanstack/react-router", "@tanstack/react-start"],
-    },
-    plugins: [
-      tsConfigPaths(),
-      tailwindcss(),
-      tanstackStart({
-        server: { entry: "server" },
-      }),
-      react(),
-    ],
-    server: {
-      host: true,
-      strictPort: false,
-    },
-  };
+export default defineConfig({
+  tanstackStart: {
+    // Redirect TanStack Start's bundled server entry to src/server.ts.
+    server: { entry: "server" },
+  },
 });
