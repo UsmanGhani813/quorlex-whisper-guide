@@ -5,7 +5,7 @@
  * builds silently drop from the generated route tree.
  */
 import { useEffect, useMemo, useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   ArrowDown,
   ArrowLeft,
@@ -216,29 +216,21 @@ const KINDS: {
 export const Route = createFileRoute("/admin/sections")({
   component: Sections,
   ssr: false,
+  // Passthrough validator — WITHOUT this, TanStack Router strips unknown search
+  // params (including our ?page=<slug>) on navigation and history.replaceState.
+  validateSearch: (search: Record<string, unknown>): { page?: string } => ({
+    page: typeof search.page === "string" ? search.page : undefined,
+  }),
 });
-
-function useUrlPage(): string | null {
-  const [page, setPage] = useState<string | null>(null);
-
-  useEffect(() => {
-    function read() {
-      if (typeof window === "undefined") return;
-      const p = new URLSearchParams(window.location.search).get("page");
-      setPage(p);
-    }
-    read();
-    window.addEventListener("popstate", read);
-    return () => window.removeEventListener("popstate", read);
-  }, []);
-
-  return page;
-}
 
 function Sections() {
   const [identity, setIdentity] = useState<Identity>(null);
   const navigate = useNavigate();
-  const urlPage = useUrlPage();
+  const rawSearch = Route.useSearch();
+  const urlPage =
+    typeof rawSearch.page === "string" && rawSearch.page.length > 0
+      ? rawSearch.page
+      : null;
 
   useEffect(() => {
     (async () => {
@@ -344,12 +336,13 @@ function SectionsIndex({ identity }: { identity: Identity }) {
                 {counts[p.id] ?? 0} section(s) · {p.published_at ? "published" : "draft"}
               </div>
               <div className="mt-4">
-                <a
-                  href={`/admin/sections?page=${encodeURIComponent(p.slug)}`}
+                <Link
+                  to="/admin/sections"
+                  search={{ page: p.slug }}
                   className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
                 >
                   Edit sections <ArrowRight className="h-3 w-3" />
-                </a>
+                </Link>
               </div>
             </article>
           ))}
@@ -506,12 +499,13 @@ function SectionsEditor({ identity, pageSlug }: { identity: Identity; pageSlug: 
           title={`Sections · ${pageSlug}`}
           intro="Couldn't load this page."
           actions={
-            <a
-              href="/admin/sections"
+            <Link
+              to="/admin/sections"
+              search={{ page: undefined }}
               className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs text-muted-foreground hover:bg-secondary"
             >
               <ArrowLeft className="h-3.5 w-3.5" /> All pages
-            </a>
+            </Link>
           }
         />
         <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-sm">
@@ -530,12 +524,13 @@ function SectionsEditor({ identity, pageSlug }: { identity: Identity; pageSlug: 
         title={`Sections · ${page.title}`}
         intro="Reorder, enable, disable, duplicate or delete blocks. Content changes take effect after Save."
         actions={
-          <a
-            href="/admin/sections"
+          <Link
+            to="/admin/sections"
+            search={{ page: undefined }}
             className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-xs text-muted-foreground hover:bg-secondary"
           >
             <ArrowLeft className="h-3.5 w-3.5" /> All pages
-          </a>
+          </Link>
         }
       />
 
