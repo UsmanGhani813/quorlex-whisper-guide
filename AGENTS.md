@@ -1,10 +1,10 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-<!-- LOVABLE:END -->
+# AGENTS
+
+Internal notes for anyone (human or agent) working on this repo.
+
+- Frontend: React 19 + TypeScript + TanStack Router / Start (SSR via Nitro) + Tailwind + shadcn/ui.
+- Backend: Supabase (project ID `mzcaohizokkqisotslsi`) with RLS. Public reads use the `sb_publishable_...` key; admin writes go through Supabase Auth.
+- Content model: everything on the public site is CMS-driven. Landing pages are composed from `page_sections` rows and rendered by `src/components/site/section-renderer.tsx`.
+- Deployment: Vercel. `vercel.json` sets `NITRO_PRESET=vercel` so Nitro builds a Vercel-compatible bundle.
+
+Do not commit `.env`. Use `.env.example` as the template.

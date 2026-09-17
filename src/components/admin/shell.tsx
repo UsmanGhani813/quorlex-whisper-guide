@@ -1,5 +1,6 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link, useMatchRoute, useNavigate } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Boxes,
   Building2,
@@ -53,8 +54,21 @@ export function AdminShell({
   children: ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const navigate = useNavigate();
   const matchRoute = useMatchRoute();
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        // @ts-expect-error logo_url not yet in generated types
+        .select("logo_url")
+        .maybeSingle();
+      const url = (data as { logo_url?: string | null } | null)?.logo_url ?? null;
+      setLogoUrl(url);
+    })();
+  }, []);
 
   async function handleSignOut() {
     await signOut();
@@ -68,9 +82,17 @@ export function AdminShell({
       <aside className="hidden w-60 shrink-0 border-r border-border bg-surface lg:flex lg:flex-col">
         <div className="border-b border-border p-5">
           <Link to="/admin" className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-primary font-display text-sm font-bold text-primary-foreground">
-              Q
-            </span>
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt="Quorlex Soft"
+                className="h-8 w-8 rounded-md object-cover"
+              />
+            ) : (
+              <span className="grid h-8 w-8 place-items-center rounded-md bg-primary font-display text-sm font-bold text-primary-foreground">
+                Q
+              </span>
+            )}
             <div>
               <p className="font-display text-sm font-semibold">Quorlex Admin</p>
               <p className="text-[11px] text-muted-foreground">{identity.role.replace("_", " ")}</p>
@@ -130,7 +152,12 @@ export function AdminShell({
           />
           <aside className="relative flex w-72 flex-col border-r border-border bg-surface">
             <div className="flex items-center justify-between border-b border-border p-4">
-              <span className="font-display text-sm font-semibold">Quorlex Admin</span>
+              <span className="flex items-center gap-2 font-display text-sm font-semibold">
+                {logoUrl ? (
+                  <img src={logoUrl} alt="" className="h-6 w-6 rounded object-cover" />
+                ) : null}
+                Quorlex Admin
+              </span>
               <button
                 onClick={() => setMobileOpen(false)}
                 className="grid h-8 w-8 place-items-center rounded-md border border-border"
@@ -174,7 +201,12 @@ export function AdminShell({
           >
             <Menu className="h-4 w-4" />
           </button>
-          <span className="font-display text-sm font-semibold">Quorlex Admin</span>
+          <span className="flex items-center gap-2 font-display text-sm font-semibold">
+            {logoUrl ? (
+              <img src={logoUrl} alt="" className="h-6 w-6 rounded object-cover" />
+            ) : null}
+            Quorlex Admin
+          </span>
           <button
             onClick={handleSignOut}
             className="grid h-9 w-9 place-items-center rounded-md border border-border"

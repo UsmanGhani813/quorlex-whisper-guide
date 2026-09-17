@@ -11,7 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+import { reportError } from "../lib/error-reporting";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
 import { CookieConsent } from "@/components/site/cookie-consent";
@@ -44,7 +44,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    reportError(error, { boundary: "tanstack_root_error_component" });
   }, [error]);
 
   return (
@@ -83,32 +83,39 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     const chrome = await fetchSiteChrome();
     return { chrome };
   },
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Quorlex Soft — Software, AI and Cloud Engineering" },
-      {
-        name: "description",
-        content:
-          "Quorlex Soft builds custom software, SaaS platforms, AI systems and cloud infrastructure for organisations worldwide.",
-      },
-      { name: "author", content: "Quorlex Soft" },
-      { property: "og:site_name", content: "Quorlex Soft" },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap",
-      },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const chrome = (loaderData as { chrome?: SiteChrome } | undefined)?.chrome;
+    const logoUrl =
+      (chrome?.settings as { logo_url?: string } | null | undefined)?.logo_url ??
+      "/favicon.ico";
+    return {
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title: "Quorlex Soft — Software, AI and Cloud Engineering" },
+        {
+          name: "description",
+          content:
+            "Quorlex Soft builds custom software, SaaS platforms, AI systems and cloud infrastructure for organisations worldwide.",
+        },
+        { name: "author", content: "Quorlex Soft" },
+        { property: "og:site_name", content: "Quorlex Soft" },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [
+        { rel: "stylesheet", href: appCss },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap",
+        },
+        { rel: "icon", href: logoUrl },
+        { rel: "apple-touch-icon", href: logoUrl },
+      ],
+    };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,

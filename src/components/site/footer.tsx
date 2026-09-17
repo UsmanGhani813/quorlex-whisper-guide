@@ -7,6 +7,8 @@ export function Footer({ chrome }: { chrome: SiteChrome }) {
   const settings = chrome.settings;
   const companyName = settings?.company_name ?? "Quorlex Soft";
   const tagline = settings?.tagline ?? "";
+  const logoUrl =
+    (settings as { logo_url?: string } | null | undefined)?.logo_url ?? null;
   const email = settings?.email ?? "";
   const phone = settings?.phone ?? "";
   const phoneHref = settings?.phone_href ?? "";
@@ -22,7 +24,16 @@ export function Footer({ chrome }: { chrome: SiteChrome }) {
       <Container className="py-14">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-1">
-            <span className="font-display text-lg font-semibold">{companyName}</span>
+            <div className="flex items-center gap-2">
+              {logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt={companyName}
+                  className="h-9 w-9 rounded-md object-cover"
+                />
+              ) : null}
+              <span className="font-display text-lg font-semibold">{companyName}</span>
+            </div>
             {tagline ? (
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{tagline}</p>
             ) : null}
