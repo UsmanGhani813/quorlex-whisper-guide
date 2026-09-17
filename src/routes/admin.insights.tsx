@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { FileText, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { fetchAdminIdentity } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { AdminPageHeader } from "@/components/admin/shell";
+import { AdminPageHeader, AdminShell } from "@/components/admin/shell";
 
 type PostRow = {
   id: string;
@@ -18,10 +19,16 @@ type PostRow = {
 };
 
 export const Route = createFileRoute("/admin/insights")({
+  loader: async () => {
+    const identity = await fetchAdminIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    return { identity };
+  },
   component: InsightsAdmin,
 });
 
 function InsightsAdmin() {
+  const { identity } = Route.useLoaderData();
   const [posts, setPosts] = useState<PostRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [newSlug, setNewSlug] = useState("");
@@ -77,7 +84,7 @@ function InsightsAdmin() {
   }
 
   return (
-    <>
+    <AdminShell identity={identity}>
       <AdminPageHeader
         title="Insights"
         intro="Blog posts. Empty is fine — this exists so the site has a place to publish when you're ready."
@@ -152,6 +159,6 @@ function InsightsAdmin() {
         excerpt so the site can list them. Public detail pages get built once at least one
         post has body content.
       </p>
-    </>
+    </AdminShell>
   );
 }

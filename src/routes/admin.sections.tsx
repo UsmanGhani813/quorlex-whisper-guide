@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowRight, Layout } from "lucide-react";
 
+import { fetchAdminIdentity } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { AdminPageHeader } from "@/components/admin/shell";
+import { AdminPageHeader, AdminShell } from "@/components/admin/shell";
 
 type PageRow = {
   id: string;
@@ -15,10 +16,17 @@ type PageRow = {
 };
 
 export const Route = createFileRoute("/admin/sections")({
+  loader: async () => {
+    const identity = await fetchAdminIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    return { identity };
+  },
   component: SectionsIndex,
 });
 
 function SectionsIndex() {
+  const { identity } = Route.useLoaderData();
+  const navigate = useNavigate();
   const [pages, setPages] = useState<PageRow[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -26,8 +34,11 @@ function SectionsIndex() {
   useEffect(() => {
     (async () => {
       const [{ data: pagesData }, { data: sectionsData }] = await Promise.all([
-        supabase.from("pages").select("id, slug, title, kind, published_at, archived_at").order("slug"),
-        // @ts-expect-error not yet typed
+        supabase
+          .from("pages")
+          .select("id, slug, title, kind, published_at, archived_at")
+          .order("slug"),
+        // @ts-expect-error not yet in generated types
         supabase.from("page_sections").select("page_id"),
       ]);
       const c: Record<string, number> = {};
@@ -41,20 +52,22 @@ function SectionsIndex() {
   }, []);
 
   return (
-    <>
+    <AdminShell identity={identity}>
       <AdminPageHeader
         title="Page sections"
-        intro="Add, reorder, enable or disable the blocks that make up each landing page. Section content lives in the page_sections table."
+        intro="Pick a page, then add, reorder, enable or disable its section blocks."
       />
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : pages.length === 0 ? (
+        <p className="rounded-md border border-dashed border-border p-6 text-sm text-muted-foreground">
+          No pages yet.
+        </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {pages.map((p) => (
-            <Link
+            <article
               key={p.id}
-              to="/admin/sections/$pageSlug"
-              params={{ pageSlug: p.slug }}
               className="group flex flex-col rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
             >
               <Layout className="mb-3 h-4 w-4 text-primary" />
@@ -63,16 +76,35 @@ function SectionsIndex() {
                 /{p.slug} · {p.kind}
               </div>
               <div className="mt-3 text-xs text-muted-foreground">
-                {counts[p.id] ?? 0} section(s){" "}
-                {p.published_at ? "· published" : "· draft"}
+                {counts[p.id] ?? 0} section(s) ·{" "}
+                {p.published_at ? "published" : "draft"}
               </div>
-              <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                Edit sections <ArrowRight className="h-3 w-3" />
-              </span>
-            </Link>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    navigate({
+                      to: "/admin/sections/$pageSlug",
+                      params: { pageSlug: p.slug },
+                    })
+                  }
+                  className="inline-flex items-center gap-1 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-90"
+                >
+                  Edit sections <ArrowRight className="h-3 w-3" />
+                </button>
+                <Link
+                  to="/admin/sections/$pageSlug"
+                  params={{ pageSlug: p.slug }}
+                  className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                >
+                  Open
+                </Link>
+              </div>
+            </article>
           ))}
         </div>
       )}
-    </>
+    </AdminShell>
   );
 }

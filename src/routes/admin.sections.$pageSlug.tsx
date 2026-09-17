@@ -8,8 +8,9 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowDown, ArrowUp, Copy, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { fetchAdminIdentity } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { AdminPageHeader } from "@/components/admin/shell";
+import { AdminPageHeader, AdminShell } from "@/components/admin/shell";
 
 type PageRow = { id: string; slug: string; title: string };
 
@@ -161,11 +162,17 @@ const KINDS: { value: string; label: string; hint: string; defaults: Partial<Sec
 ];
 
 export const Route = createFileRoute("/admin/sections/$pageSlug")({
+  loader: async () => {
+    const identity = await fetchAdminIdentity();
+    if (!identity) throw new Error("Not authenticated");
+    return { identity };
+  },
   component: SectionsEditor,
 });
 
 function SectionsEditor() {
   const { pageSlug } = Route.useParams();
+  const { identity } = Route.useLoaderData();
   const navigate = useNavigate();
 
   const [page, setPage] = useState<PageRow | null>(null);
@@ -285,10 +292,15 @@ function SectionsEditor() {
 
   const kindMap = useMemo(() => Object.fromEntries(KINDS.map((k) => [k.value, k.label])), []);
 
-  if (loading || !page) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (loading || !page)
+    return (
+      <AdminShell identity={identity}>
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      </AdminShell>
+    );
 
   return (
-    <>
+    <AdminShell identity={identity}>
       <AdminPageHeader
         title={`Sections · ${page.title}`}
         intro="Reorder, enable, disable, duplicate or delete blocks. Content changes take effect after Save."
@@ -349,7 +361,7 @@ function SectionsEditor() {
           ))
         )}
       </div>
-    </>
+    </AdminShell>
   );
 }
 
