@@ -434,7 +434,7 @@ export async function fetchPageWithSections(slug: string) {
       fetchProjects(),
       fetchProcessSteps(),
       fetchTeam(),
-      fetchTeamMemberByName("Malik Aftab Hussain"),
+      fetchTeamMemberByName("Aftab Hussain"),
       fetchInsights(),
       fetchFaqs(),
       fetchTechnologyGroups(),

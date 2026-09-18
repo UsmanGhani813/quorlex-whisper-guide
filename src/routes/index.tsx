@@ -38,7 +38,7 @@ export const Route = createFileRoute("/")({
         fetchProcessSteps(),
         fetchIndustries(),
         fetchTeam(),
-        fetchTeamMemberByName("Malik Aftab Hussain"),
+        fetchTeamMemberByName("Aftab Hussain"),
         fetchInsights(),
       ]);
     const data: SectionData = {

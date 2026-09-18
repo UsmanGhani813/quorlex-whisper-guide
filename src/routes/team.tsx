@@ -64,7 +64,7 @@ function Team() {
   const { members, sections, sectionData } = Route.useLoaderData();
   const leadership = members.filter((m) => m.is_leadership).sort((a, b) => a.sort_order - b.sort_order);
   const rest = members.filter((m) => !m.is_leadership).sort((a, b) => a.sort_order - b.sort_order);
-  const founder = members.find((m) => m.name === "Malik Aftab Hussain");
+  const founder = members.find((m) => m.name === "Aftab Hussain");
 
   return (
     <>
@@ -144,7 +144,7 @@ function Team() {
           <SectionHeading eyebrow="Leadership" title="Working alongside the founder" />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {leadership
-              .filter((m) => m.name !== "Malik Aftab Hussain")
+              .filter((m) => m.name !== "Aftab Hussain")
               .map((member) => (
                 <article key={member.id} className="rounded-xl border border-border bg-card p-6">
                   <div className="flex items-center gap-3">
